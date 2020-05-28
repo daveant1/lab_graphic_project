@@ -14,7 +14,7 @@ class mouse:
 
 class cage:
     def __init__(self, CID):
-        self.CID = CID   #Cage ID
+        self.CID = CID   #Cage ID (string)
         self.mice = []  #vector of mouse ID strings in this cage
         self.total = 0    #Total number of mice in the cage
         self.breeding = False

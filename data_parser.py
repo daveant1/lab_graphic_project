@@ -33,13 +33,13 @@ def gen_objs(df):
     new_cage.mice = self_mice
     new_cage.total = len(self_mice)
     cages.append(new_cage)
-    for c in cages:
-        print(c.CID)
+    #for c in cages:
+        #print(c.CID)
 
     #Loop to initalize all mice objects
     for i in range(len(m_ls)):
         new_mouse = mouse(str(m_ls[i]))
-        new_mouse.CID = c_ls[i]
+        new_mouse.CID = str(c_ls[i])
         if df['Ear Tag?'][i] == 'No':
             new_mouse.ET = False
         if df['Sex'][i] == 'M':     #False: Female, True: Male
@@ -55,33 +55,33 @@ def gen_objs(df):
             new_mouse.runt = True
         new_mouse.comment = df['Comments'][i] #Comment entry
         mice.append(new_mouse)
-
-    #print(col_list)
-    #print(ID)
-    #print(cages)
+    #print(len(mice),len(cages))
     return mice, cages
 
 #This function fills in the remaining info for the cage objects from the second excel sheet
+#Input: pandas data frame of cages sheet, unfinished vector of cages
+#Output: finished vector of cages
 def finish_cages(df, cages):
     for i in range(len(cages)):
         if df['Breeding?'][i] == 'Yes':
             cages[i].breeding = True
         cages[i].EC = df['Experimental Condition'][i]
-        cages[i].pups = df['# of Pups'][i]
+        cages[i].pups = df['Number of Pups'][i]
         cages[i].DOB = df['Pup DOB'][i]
         cages[i].WD = df['Wean Date (DOB + 28 d)'][i]
     return cages
 
-def parse_data():
-    #data frame generation (skip first row)
-    file = open('dummy_data.xlsx', 'rb')
-    mice_data = pd.read_excel(file, sheet_name = 'Mice', skiprows = 1)
+def parse_data(filename):
+    file = open(filename, 'rb')
+    mice_data = pd.read_excel(file, sheet_name = 'Mice', skiprows = 1)  #data frame generation (skip first row)
     #usecols = ['Mouse ID', 'Cage ID', 'Ear Tag?', etc.]
     cage_data = pd.read_excel(file, sheet_name = 'Cages', skiprows = 1)
 
     mice, cages = gen_objs(mice_data)
     final_cages = finish_cages(cage_data, cages)
 
+    # for c in final_cages:
+    #     print(vars(c))
+    # for m in mice:
+    #     print(vars(m))
     return mice, final_cages
-
-m,f = parse_data()
