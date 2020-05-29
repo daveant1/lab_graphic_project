@@ -5,7 +5,7 @@ from objects import *
 #Input: pandas data frame from colony_data
 #Output: Vector of mouse objects and vector of cage objects
 def gen_objs(df):
-    mice = []      #empty vector of mouse objects
+    mice = {}      #empty dict of mouse objects
     cages = []     #empty vector of cage objects
     col_list = df.columns.tolist()
 
@@ -13,28 +13,27 @@ def gen_objs(df):
     c_ls = df['Cage ID'].tolist()      #list of all cages including repeats
     m_ls = df['Mouse ID'].tolist()      #list of all mouse IDs
 
-    #Loop to generate new cage based on new Cage ID
+    #Loop to generate new cage entry based on new Cage ID
     #print(c_ls)
-    prev_cage = c_ls[0]
+    prev_cage = str(c_ls[0])
     new_cage = cage(str(c_ls[0]))
     self_mice = []
     for i in range(len(c_ls)):
-        if c_ls[i] != prev_cage:
+        CID = str(c_ls[i])    #Cage ID
+        if CID != prev_cage:
             new_cage.mice = self_mice
             new_cage.total = len(self_mice)
             cages.append(new_cage)
-            new_cage = cage(str(c_ls[i]))
+            new_cage = cage(CID)
             self_mice = []      #vector of mice specific to one cage
-            prev_cage = str(c_ls[i])
+            prev_cage = CID
 
         self_mice.append(str(m_ls[i]))
 
-    #set members and append again for final cage outside loop
+    #set members and append again for final cage
     new_cage.mice = self_mice
     new_cage.total = len(self_mice)
     cages.append(new_cage)
-    #for c in cages:
-        #print(c.CID)
 
     #Loop to initalize all mice objects
     for i in range(len(m_ls)):
@@ -44,7 +43,7 @@ def gen_objs(df):
             new_mouse.ET = False
         if df['Sex'][i] == 'M':     #False: Female, True: Male
             new_mouse.sex = True
-        new_mouse.age = df['Age (days)'][i]
+        new_mouse.age = int(df['Age (days)'][i])
         if df['Pregnant?'][i] == 'Yes':
             new_mouse.pregnant = True
         new_mouse.sacked = df['Sacked Status (Blank, Potential, Sacked)'][i]   #Blank, may be sacked (Potential), or already sacked (Sacked)
@@ -54,8 +53,7 @@ def gen_objs(df):
         if df['Runt?'][i] == 'Yes':
             new_mouse.runt = True
         new_mouse.comment = df['Comments'][i] #Comment entry
-        mice.append(new_mouse)
-    #print(len(mice),len(cages))
+        mice[str(m_ls[i])] = new_mouse
     return mice, cages
 
 #This function fills in the remaining info for the cage objects from the second excel sheet
@@ -80,8 +78,6 @@ def parse_data(filename):
     mice, cages = gen_objs(mice_data)
     final_cages = finish_cages(cage_data, cages)
 
-    # for c in final_cages:
-    #     print(vars(c))
-    # for m in mice:
-    #     print(vars(m))
+    # for m in mice.keys():
+    #     print(vars(mice[m]))
     return mice, final_cages

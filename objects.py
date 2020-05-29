@@ -4,7 +4,7 @@ class mouse:
          self.CID = ''  #Cage ID
          self.ET = True    #Eartag?
          self.sex = False   #False: Female, True: Male
-         self.age = 0
+         self.age = 0       #(int)
          self.pregnant = False
          self.sacked = ''   #Blank, may be sacked (Potential), or already sacked (Sacked)
          self.DOS = ''     #Date of Sack
