@@ -11,6 +11,8 @@ def update_prop(mouse, shape):
     if not mouse.ET:
         shape.setOutline('Red')
         shape.setWidth(2)
+    if mouse.age >= 300:
+        shape.setFill('Orange')
     return shape
 
 #Function to update mouse text elements

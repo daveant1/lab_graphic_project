@@ -37,4 +37,4 @@ for c in cages:
         y1 = y2
         y2 += 160
         row_counter = 0
-win.getMouse()
+win.getKey()
