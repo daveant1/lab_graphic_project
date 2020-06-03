@@ -17,8 +17,7 @@ class cage:
         self.CID = CID   #Cage ID (string)
         self.mice = []  #vector of mouse ID strings in this cage
         self.total = 0    #Total number of mice in the cage
-        self.breeding = False
-        self.EC = ''    #Experimental Condition
+        self.status = ''
         self.pups = 0   #Number of pups
         self.DOB = ''   #Pup date of birth
         self.WD = ''    #Wean date
