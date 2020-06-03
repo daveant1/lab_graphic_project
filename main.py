@@ -4,7 +4,7 @@ from print_func import *
 import math
 
 #Inital data parsing and setup
-filename = 'dummy_data.xlsx'
+filename = '05-28-2020.xlsx'
 mice, cages = parse_data(filename)
 
 #Set up base layer dimensions based on number of cages
@@ -20,14 +20,12 @@ row_counter = 0   #a counter to realize when we have finished drawing a row of c
 #loop to draw cages (base layer of rectangles)
 #Each cage is 144x160 px by default
 for c in cages:
-# # for y in range(-1, base_y-160, 160):     #base_y-160 to account for last box
-# #     for x in range(-1, 576, 144):        #720-144=576
-#         #dim = [Point(x,y), Point(x + 144, y + 160)]  #dimension list for rectangle
-#         print(Point(x,y), Point(x + 144, y + 160))
-#         r = Rectangle(Point(x,y), Point(x + 144, y + 160))
-    r = Rectangle(Point(x1, y1), Point(x2,y2))
-    r.setFill('DarkGray')
+    r = Rectangle(Point(x1, y1), Point(x2,y2))   #generate new cage
+    r = update_cage(c,r)    #update cage color
     r.draw(win)
+    cage_text = gen_cage_text(c, r)
+    for t in cage_text:
+        t.draw(win)
     print_mice(win, mice, c.mice, x1, y1)
     x1 = x2
     x2 += 144
@@ -37,4 +35,4 @@ for c in cages:
         y1 = y2
         y2 += 160
         row_counter = 0
-win.getKey()
+win.getMouse()
