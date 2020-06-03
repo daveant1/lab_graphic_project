@@ -14,7 +14,6 @@ def gen_objs(df):
     m_ls = df['Mouse ID'].tolist()      #list of all mouse IDs
 
     #Loop to generate new cage entry based on new Cage ID
-    #print(c_ls)
     prev_cage = str(c_ls[0])
     new_cage = cage(str(c_ls[0]))
     self_mice = []
@@ -39,18 +38,18 @@ def gen_objs(df):
     for i in range(len(m_ls)):
         new_mouse = mouse(str(m_ls[i]))
         new_mouse.CID = str(c_ls[i])
-        if df['Ear Tag?'][i] == 'No':
+        if df['Ear Tag?'][i] == 'NO':
             new_mouse.ET = False
         if df['Sex'][i] == 'M':     #False: Female, True: Male
             new_mouse.sex = True
         new_mouse.age = int(df['Age (days)'][i])
-        if df['Pregnant?'][i] == 'Yes':
+        if df['Pregnant?'][i] == 'YES':
             new_mouse.pregnant = True
         new_mouse.sacked = df['Sacked Status (Blank, Potential, Sacked)'][i]   #Blank, may be sacked (Potential), or already sacked (Sacked)
         new_mouse.DOS = df['Date of Sack'][i]
-        if df['Genotyped?'][i] == 'Yes':
+        if df['Genotyped?'][i] == 'YES':
             new_mouse.genotyped = True
-        if df['Runt?'][i] == 'Yes':
+        if df['Runt?'][i] == 'YES':
             new_mouse.runt = True
         new_mouse.comment = df['Comments'][i] #Comment entry
         mice[str(m_ls[i])] = new_mouse
@@ -61,9 +60,8 @@ def gen_objs(df):
 #Output: finished vector of cages
 def finish_cages(df, cages):
     for i in range(len(cages)):
-        if df['Breeding?'][i] == 'Yes':
-            cages[i].breeding = True
-        cages[i].EC = df['Experimental Condition'][i]
+        cages[i].status = df['Status/Condition'][i]
+        print(type(cages[i].status))
         cages[i].pups = df['Number of Pups'][i]
         cages[i].DOB = df['Pup DOB'][i]
         cages[i].WD = df['Wean Date (DOB + 28 d)'][i]
@@ -75,9 +73,11 @@ def parse_data(filename):
     #usecols = ['Mouse ID', 'Cage ID', 'Ear Tag?', etc.]
     cage_data = pd.read_excel(file, sheet_name = 'Cages', skiprows = 1)
 
+
     mice, cages = gen_objs(mice_data)
     final_cages = finish_cages(cage_data, cages)
-
+    # for c in final_cages:
+    #     print(vars(c))
     # for m in mice.keys():
     #     print(vars(mice[m]))
     return mice, final_cages
