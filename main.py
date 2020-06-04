@@ -42,7 +42,7 @@ win.postscript(file = 'image.eps', colormode = 'color')
 # output.save("image.png")
 from PIL import Image
 
-TARGET_BOUNDS = (720, 480)
+TARGET_BOUNDS = (720, base_y)
 
 # Load the EPS at 10 times whatever size Pillow thinks it should be
 # (Experimentaton suggests that scale=1 means 72 DPI but that would
