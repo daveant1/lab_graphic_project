@@ -1,5 +1,6 @@
 from graphics import *
 import re
+import math
 
 #Function to update properties of mouse shape
 #Input: mouse object, respective shape
@@ -33,7 +34,7 @@ def update_cage(cage, shape):
 
 
 
-def gen_cage_text(cage, shape):
+def gen_cage_text(cage, shape, factor):
     tl=[]   #list of text objects to be drawn in main loop
     origin = shape.getCenter()    #Retrieve current coordinates
     x = origin.getX()
@@ -47,7 +48,7 @@ def gen_cage_text(cage, shape):
     else:
         pos = Point(x-50, y-65)
     t = Text(pos, cage.CID)
-    t.setSize(18)
+    t.setSize(math.ceil(18*factor))
     t.setStyle('bold')
     tl.append(t)
 
@@ -59,12 +60,12 @@ def gen_cage_text(cage, shape):
         new_DOB = match.group(2) + '/' + match.group(3) + '/' + match.group(1)
         pup_msg = str(int(cage.pups)) + ' pups DOB: ' + new_DOB
         t = Text(pos, pup_msg)
-        t.setSize(10)
+        t.setSize(math.ceil(10*factor))
         tl.append(t)
     return tl
 
 #Function to update mouse text elements
-def gen_mouse_text(mouse, shape):
+def gen_mouse_text(mouse, shape, factor):
     tl=[]   #list of text objects to be drawn in main loop
     origin = shape.getCenter()    #Retrieve current coordinates
     x = origin.getX()
@@ -72,9 +73,9 @@ def gen_mouse_text(mouse, shape):
 
     #Draw Age
     t = Text(origin, mouse.age)
-    t.setSize(12)
+    t.setSize(math.ceil(12*factor)+1)
     if mouse.runt:
-        t.setSize(8)
+        t.setSize(math.ceil(8*factor))
     # if mouse.genotyped:
     #     t.setTextColor('Yellow')
     tl.append(t)
@@ -82,7 +83,7 @@ def gen_mouse_text(mouse, shape):
     #Draw Mouse ID
     pos = Point(x, y+23)
     t = Text(pos, mouse.ID)
-    t.setSize(11)
+    t.setSize(math.ceil(11*factor)+1)
     if mouse.genotyped:
         t.setTextColor('Yellow')
     tl.append(t)
@@ -93,7 +94,7 @@ def gen_mouse_text(mouse, shape):
 #Draw all mice shapes and apply relevant properties (called by main())
 #initalize coordinates (x and y always represent center of shape)
 #inital coordinate: (o_x, o_y) is the top left corner of current cage cell
-def print_mice(win, mice_dict, mouse_list, o_x, o_y):
+def print_mice(win, mice_dict, mouse_list, o_x, o_y, factor):
     x = o_x + 24
     y = o_y + 50
     m_count = 0    #Count of printed mice to check for next row
@@ -110,7 +111,7 @@ def print_mice(win, mice_dict, mouse_list, o_x, o_y):
         sh = update_mouse(curr, sh)
         sh.draw(win)
 
-        mouse_text = gen_mouse_text(curr, sh)   #generate text elements for mouse as list
+        mouse_text = gen_mouse_text(curr, sh, factor)   #generate text elements for mouse as list
         for t in mouse_text:
             t.draw(win)
 
