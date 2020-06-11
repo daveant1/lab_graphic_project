@@ -1,5 +1,4 @@
 import pandas as pd
-import re
 from objects import *
 
 #Input: pandas data frame from colony_data
@@ -29,7 +28,7 @@ def gen_objs(df):
 
         self_mice.append(str(m_ls[i]))
 
-    #set members and append again for final cage
+    #set members and append for final cage
     new_cage.mice = self_mice
     new_cage.total = len(self_mice)
     cages.append(new_cage)
@@ -61,7 +60,7 @@ def gen_objs(df):
 def finish_cages(df, cages):
     for i in range(len(cages)):
         cages[i].status = df['Status/Condition'][i]
-        print(type(cages[i].status))
+        # print(type(cages[i].status))
         cages[i].pups = df['Number of Pups'][i]
         cages[i].DOB = df['Pup DOB'][i]
         cages[i].WD = df['Wean Date (DOB + 28 d)'][i]

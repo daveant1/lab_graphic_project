@@ -40,18 +40,22 @@ def gen_cage_text(cage, shape):
     y = origin.getY()
 
     #Draw Cage ID
-    if len(cage.CID) > 3:
-        pos = Point(x-45, y-65)
+    if len(cage.CID) > 5:
+        pos=Point(x, y-65)
+    elif len(cage.CID) > 3:
+        pos = Point(x-43, y-65)
     else:
-        pos = Point(x-55, y-65)
+        pos = Point(x-50, y-65)
     t = Text(pos, cage.CID)
+    t.setSize(18)
+    t.setStyle('bold')
     tl.append(t)
 
     #Draw Pup DOB
     if cage.pups > 0:
         pos = Point(x, y+65)
         #Reformat pup DOB and create pup text
-        match = re.search(r'(\d\d\d\d)\-\d(\d)\-(\d\d)', str(cage.DOB))
+        match = re.search(r'(\d*)\-(\d\d)\-(\d\d)', str(cage.DOB))
         new_DOB = match.group(2) + '/' + match.group(3) + '/' + match.group(1)
         pup_msg = str(int(cage.pups)) + ' pups DOB: ' + new_DOB
         t = Text(pos, pup_msg)
@@ -78,7 +82,7 @@ def gen_mouse_text(mouse, shape):
     #Draw Mouse ID
     pos = Point(x, y+23)
     t = Text(pos, mouse.ID)
-    t.setSize(9)
+    t.setSize(11)
     if mouse.genotyped:
         t.setTextColor('Yellow')
     tl.append(t)

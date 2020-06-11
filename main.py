@@ -1,10 +1,18 @@
 from graphics import *
 from data_parser import *
 from print_func import *
+import re
+import os
 import math
 
 #Inital data parsing and setup
-filename = '05-28-2020.xlsx'
+dir = os.listdir()
+#Check for valid excel file
+for file in dir:
+    match = re.search(r'\w\w\-\w\w\-\w\w\.xlsx', file)
+    if match != None:
+        break
+filename = str(match.group())
 mice, cages = parse_data(filename)
 
 #Set up base layer dimensions based on number of cages
@@ -42,7 +50,7 @@ win.postscript(file = 'image.eps', colormode = 'color')
 # output.save("image.png")
 from PIL import Image
 
-TARGET_BOUNDS = (720, base_y)
+pic_size = (720, base_y)
 
 # Load the EPS at 10 times whatever size Pillow thinks it should be
 # (Experimentaton suggests that scale=1 means 72 DPI but that would
@@ -55,13 +63,13 @@ pic.load(scale=10)
 #     pic = pic.convert("RGB")
 
 # Calculate the new size, preserving the aspect ratio
-ratio = min(TARGET_BOUNDS[0] / pic.size[0],
-            TARGET_BOUNDS[1] / pic.size[1])
-new_size = (int(pic.size[0] * ratio), int(pic.size[1] * ratio))
+factor = min(pic_size[0] / pic.size[0],
+            pic_size[1] / pic.size[1])
+final_size = (int(pic.size[0] * factor), int(pic.size[1] * factor))
 
 # Resize to fit the target size
-pic = pic.resize(new_size, Image.ANTIALIAS)
+pic = pic.resize(final_size, Image.ANTIALIAS)
 
 # Save to PNG
-pic.save("image.png")
+pic.save(filename + '.png')
 win.getMouse()
