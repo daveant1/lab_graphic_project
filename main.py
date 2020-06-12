@@ -72,5 +72,5 @@ final_size = (int(pic.size[0] * factor), int(pic.size[1] * factor))
 pic = pic.resize(final_size, Image.ANTIALIAS)
 
 # Save to PNG
-pic.save(match.group(1) + '.png')
+pic.save('../'+ match.group(1) + '.png')
 win.getMouse()
