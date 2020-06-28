@@ -1,4 +1,6 @@
 import pandas as pd
+import xlrd as xd
+from time import perf_counter
 from objects import *
 
 #Input: pandas data frame from colony_data
@@ -6,11 +8,17 @@ from objects import *
 def gen_objs(df):
     mice = {}      #empty dict of mouse objects
     cages = []     #empty vector of cage objects
-    col_list = df.columns.tolist()
+    #col_list = df.columns.tolist()
 
 #Construct and assign mouse vectors to cages
     c_ls = df['Cage ID'].tolist()      #list of all cages including repeats
     m_ls = df['Mouse ID'].tolist()      #list of all mouse IDs
+    # for m in m_ls:
+    #     if type(m) == float:
+    #         m_ls.remove(m)
+    # for c in c_ls:
+    #     if type(c) == float:
+    #         m_ls.remove(c)
 
     #Loop to generate new cage entry based on new Cage ID
     prev_cage = str(c_ls[0])
@@ -37,20 +45,20 @@ def gen_objs(df):
     for i in range(len(m_ls)):
         new_mouse = mouse(str(m_ls[i]))
         new_mouse.CID = str(c_ls[i])
-        if df['Ear Tag?'][i] == 'NO':
+        if df['Ear Tag?'][i] == 'N':
             new_mouse.ET = False
         if df['Sex'][i] == 'M':     #False: Female, True: Male
             new_mouse.sex = True
         new_mouse.age = int(df['Age (days)'][i])
-        if df['Pregnant?'][i] == 'YES':
+        if df['Pregnant?'][i] == 'Y':
             new_mouse.pregnant = True
-        new_mouse.sacked = df['Sacked Status (Blank, Potential, Sacked)'][i]   #Blank, may be sacked (Potential), or already sacked (Sacked)
-        new_mouse.DOS = df['Date of Sack'][i]
-        if df['Genotyped?'][i] == 'YES':
+        #new_mouse.sacked = df['Sacked Status (Blank, Potential, Sacked)'][i]   #Blank, may be sacked (Potential), or already sacked (Sacked)
+        #new_mouse.DOS = df['Date of Sack'][i]
+        if df['Genotyped?'][i] == 'Y':
             new_mouse.genotyped = True
-        if df['Runt?'][i] == 'YES':
+        if df['Runt?'][i] == 'Y':
             new_mouse.runt = True
-        new_mouse.comment = df['Comments'][i] #Comment entry
+        #new_mouse.comment = df['Comments'][i] #Comment entry
         mice[str(m_ls[i])] = new_mouse
     return mice, cages
 
@@ -63,18 +71,20 @@ def finish_cages(df, cages):
         # print(type(cages[i].status))
         cages[i].pups = df['Number of Pups'][i]
         cages[i].DOB = df['Pup DOB'][i]
-        cages[i].WD = df['Wean Date (DOB + 28 d)'][i]
+        #cages[i].WD = df['Wean Date (DOB + 28 d)'][i]
     return cages
 
 def parse_data(filename):
     file = open(filename, 'rb')
     mice_data = pd.read_excel(file, sheet_name = 'Mice', skiprows = 1)  #data frame generation (skip first row)
-    #usecols = ['Mouse ID', 'Cage ID', 'Ear Tag?', etc.]
     cage_data = pd.read_excel(file, sheet_name = 'Cages', skiprows = 1)
-
-
+#usecols = ['Mouse ID','Cage ID','Ear Tag?','Sex','Age (days)']
+#usecols = ['Cage ID','Status/Condition','Number of Pups','Pup DOB']
+    start = perf_counter()
     mice, cages = gen_objs(mice_data)
     final_cages = finish_cages(cage_data, cages)
+    end = perf_counter()
+    print('parsing time: ', end-start)
     # for c in final_cages:
     #     print(vars(c))
     # for m in mice.keys():

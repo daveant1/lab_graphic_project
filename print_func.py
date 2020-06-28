@@ -73,7 +73,7 @@ def gen_mouse_text(mouse, shape, factor):
 
     #Draw Age
     t = Text(origin, mouse.age)
-    t.setSize(math.ceil(12*factor)+1)
+    t.setSize(math.ceil(12*factor))
     if mouse.runt:
         t.setSize(math.ceil(8*factor))
     # if mouse.genotyped:
@@ -83,7 +83,7 @@ def gen_mouse_text(mouse, shape, factor):
     #Draw Mouse ID
     pos = Point(x, y+23)
     t = Text(pos, mouse.ID)
-    t.setSize(math.ceil(11*factor)+1)
+    t.setSize(math.floor(11*factor))
     if mouse.genotyped:
         t.setTextColor('Yellow')
     tl.append(t)
@@ -117,7 +117,7 @@ def print_mice(win, mice_dict, mouse_list, o_x, o_y, factor):
 
         m_count+=1
         if(m_count==3):
-            x -= 72
+            x -= 96
             y += 48
         else:
             x += 48
