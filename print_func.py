@@ -10,8 +10,10 @@ def update_mouse(mouse, shape):
     shape.setFill('White')
     # if mouse.pregnant:
     #     shape.setFill('Pink')
-    if mouse.age > 275:
+    if isinstance(mouse.age, int) and (mouse.age > 275):
         shape.setFill('Orange')
+    # if mouse.sacked:
+    #     shape.setFill('Black')
     if not mouse.ET:
         shape.setOutline('Red')
         shape.setWidth(3)
@@ -58,7 +60,7 @@ def gen_cage_text(cage, shape, factor):
         #Reformat pup DOB and create pup text
         match = re.search(r'(\d*)\-(\d\d)\-(\d\d)', str(cage.DOB))
         new_DOB = match.group(2) + '/' + match.group(3) + '/' + match.group(1)
-        pup_msg = str(int(cage.pups)) + ' pups DOB: ' + new_DOB
+        pup_msg = str(int(cage.pups)) + ' pups DOB: ' + str(new_DOB)
         t = Text(pos, pup_msg)
         t.setSize(math.ceil(10*factor))
         tl.append(t)
@@ -72,13 +74,14 @@ def gen_mouse_text(mouse, shape, factor):
     y = origin.getY()
 
     #Draw Age
-    t = Text(origin, mouse.age)
-    t.setSize(math.ceil(12*factor))
-    if mouse.runt:
-        t.setSize(math.ceil(8*factor))
-    # if mouse.genotyped:
-    #     t.setTextColor('Yellow')
-    tl.append(t)
+    if mouse.age != '':
+        t = Text(origin, mouse.age)
+        t.setSize(math.ceil(12*factor))
+        if mouse.runt:
+            t.setSize(math.ceil(8*factor))
+            # if mouse.genotyped:
+            #     t.setTextColor('Yellow')
+        tl.append(t)
 
     #Draw Mouse ID
     pos = Point(x, y+23)
@@ -98,8 +101,8 @@ def print_mice(win, mice_dict, mouse_list, o_x, o_y, factor):
     x = o_x + 24
     y = o_y + 50
     m_count = 0    #Count of printed mice to check for next row
-    for ID in mouse_list:
-        curr = mice_dict[ID]     #fetch curr mouse from dict
+    for idx in mouse_list:
+        curr = mice_dict[idx]     #fetch curr mouse from dict
         if curr.runt:
             rad = 10
         else:
@@ -114,6 +117,13 @@ def print_mice(win, mice_dict, mouse_list, o_x, o_y, factor):
         mouse_text = gen_mouse_text(curr, sh, factor)   #generate text elements for mouse as list
         for t in mouse_text:
             t.draw(win)
+
+        if curr.sacked in ('P', 'S'):
+            ln = Line(Point(x-rad, y+rad), Point(x+rad, y-rad))
+            ln.draw(win)
+            if curr.sacked == 'S':
+                ln2 = Line(Point(x-rad, y-rad), Point(x+rad, y+rad))
+                ln2.draw(win)
 
         m_count+=1
         if(m_count==3):
