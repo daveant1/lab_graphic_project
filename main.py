@@ -12,18 +12,36 @@ from win32api import GetSystemMetrics
 win_h = GetSystemMetrics(1) - 19
 
 #Inital data parsing and setup
-dir = os.listdir()
+basename = os.path.dirname(os.getcwd())
+dir = os.listdir(basename)
+
 #Check for valid excel file
 for file in dir:
-    match = re.search(r'(\d\d\-\d\d\-\d\d)(\.xlsx)', file)
+    match = re.search(r'(\d+\-\d+\-\d+)(\.xlsx)', file)
     if match != None:
         break
+if match == None:
+    print('Error: No file with name format 00-00-00.xlsx found!')
+    sys.exit(0)
 filename = str(match.group(1)) + str(match.group(2))
+
 mice, cages = parse_data(filename)
-start = perf_counter()
+total_mice = len(mice.keys())
+total_cages = len(cages)
+total_litters = 0
+total_pups = 0
+total_pregnant = 0
+for c in cages:
+    if c.pups > 0:
+        total_litters += 1
+        total_pups += c.pups
+    if c.status == 'PREGNANT':
+        total_pregnant += 1
+
+# start = perf_counter()
 #Set up base layer dimensions based on number of cages for default (720,base_y) window
 num_frames = math.ceil(len(cages)/40)
-#print(num_frames)
+
 scale_f = float(win_h/1280)
 
 for i in range(num_frames):
@@ -79,5 +97,13 @@ for i in range(num_frames):
     # Save to PNG
     pic.save('../'+ match.group(1) + '-'+ str(i) + '.png')
     win.close()
-end = perf_counter()
-print('printing time:', end-start)
+
+col_txt = open('../'+'Colony_Data_'+ match.group(1) + '.txt', 'w')
+print('Total Number of Cages:', total_cages,'\n', file = col_txt)
+print('Total Number of Mice:', total_mice,'\n', file = col_txt)
+print('Total Number of Litters:', total_litters,'\n', file = col_txt)
+print('Total Number of Pups:', int(total_pups),'\n', file = col_txt)
+print('Total Number of Pregancies:', total_pregnant, file = col_txt)
+col_txt.close()
+# end = perf_counter()
+# print('printing time:', end-start)
