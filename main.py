@@ -1,7 +1,6 @@
 from graphics import *
 from data_parser import *
 from print_func import *
-from time import perf_counter
 import re
 import os
 import math
@@ -80,8 +79,6 @@ for i in range(num_frames):
     #Rescale objects in window to fit window size
     win.addtag_all('all')
     win.scale('all', 0, 0, scale_f, scale_f)
-    # print(scale_f)
-    # print(win.cget('width'), win.cget('height'))
     win.postscript(file = 'image.eps', colormode = 'color')
 
     #Set desired dimensions for rescaling eps conversion
@@ -98,6 +95,8 @@ for i in range(num_frames):
     pic.save('../'+ match.group(1) + '-'+ str(i) + '.png')
     win.close()
 
+print('Colony graphic saved successfully.')
+
 col_txt = open('../'+'Colony_Data_'+ match.group(1) + '.txt', 'w')
 print('Total Number of Cages:', total_cages,'\n', file = col_txt)
 print('Total Number of Mice:', total_mice,'\n', file = col_txt)
@@ -105,5 +104,7 @@ print('Total Number of Litters:', total_litters,'\n', file = col_txt)
 print('Total Number of Pups:', int(total_pups),'\n', file = col_txt)
 print('Total Number of Pregancies:', total_pregnant, file = col_txt)
 col_txt.close()
+
+print('Colony stat file saved successfully.')
 # end = perf_counter()
 # print('printing time:', end-start)

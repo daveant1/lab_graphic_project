@@ -1,8 +1,4 @@
-###EDITS: made it so blank rows are skipped. fixed issue with age conversion to integer
 import pandas as pd
-import numpy as np
-import xlrd as xd
-from time import perf_counter
 from objects import *
 
 #Input: pandas data frame from colony_data
@@ -41,19 +37,19 @@ def gen_objs(df):
         new_mouse = mouse(str(m_ls[i]))
         new_mouse.idx = i
         new_mouse.CID = str(c_ls[i])
-        if df['Ear Tag?'][i] == 'N':
+        if str(df['Ear Tag?'][i]).lower() in ('n', 'no'):
             new_mouse.ET = False
-        if df['Sex'][i] == 'M':     #False: Female, True: Male
+        if str(df['Sex'][i]).lower() == 'm':     #False: Female, True: Male
             new_mouse.sex = True
         if not isinstance(df['Age (days)'][i], float):
             new_mouse.age = df['Age (days)'][i]
-        # if df['Pregnant?'][i] == 'Y':
-        #     new_mouse.pregnant = True
-        new_mouse.sacked = df['Sacked Status: Potential (P), Sacked (S)'][i] #Blank, may be sacked (Potential), or already sacked (Sacked)
+        if str(df['Pregnant?'][i]).lower() in ('y', 'yes'):
+            new_mouse.pregnant = True
+        new_mouse.sacked = str(df['Sacked Status: Potential (P), Sacked (S)'][i]).lower() #Blank, may be sacked (Potential), or already sacked (Sacked)
         #new_mouse.DOS = df['Date of Sack'][i]
-        if df['Genotyped?'][i] == 'Y':
+        if str(df['Genotyped?'][i]).lower() in ('y', 'yes'):
             new_mouse.genotyped = True
-        if df['Runt?'][i] == 'Y':
+        if str(df['Runt?'][i]).lower() in ('y', 'yes'):
             new_mouse.runt = True
         #new_mouse.comment = df['Comments'][i] #Comment entry
         mice[i] = new_mouse
@@ -86,5 +82,5 @@ def parse_data(filename):
     # for c in final_cages:
     #     print(vars(c))
     # for m in mice.keys():
-    #     print(type(mice[m].age))
+    #     print(vars(mice[m]))
     return mice, final_cages

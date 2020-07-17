@@ -6,14 +6,11 @@ import math
 #Input: mouse object, respective shape
 #Output: updated shape
 def update_mouse(mouse, shape):
-    origin = shape.getCenter()
     shape.setFill('White')
-    # if mouse.pregnant:
-    #     shape.setFill('Pink')
+    if mouse.pregnant:
+        shape.setFill('Pink')
     if isinstance(mouse.age, int) and (mouse.age > 275):
         shape.setFill('Orange')
-    # if mouse.sacked:
-    #     shape.setFill('Black')
     if not mouse.ET:
         shape.setOutline('Red')
         shape.setWidth(3)
@@ -27,10 +24,10 @@ def update_cage(cage, shape):
         shape.setFill('DarkGray')
     elif cage.status == 'PREGNANT':
         shape.setFill('Pink')
-    elif type(cage.status) == float:   #cell is blank, default color is white
-        shape.setFill('White')
-    else:
+    elif isinstance(cage.status, str) and cage.status != ' ':   #cell is blank, default color is white
         shape.setFill(cage.status)
+    else:
+        shape.setFill('White')
     return shape
 
 
@@ -79,8 +76,6 @@ def gen_mouse_text(mouse, shape, factor):
         t.setSize(math.ceil(12*factor))
         if mouse.runt:
             t.setSize(math.ceil(8*factor))
-            # if mouse.genotyped:
-            #     t.setTextColor('Yellow')
         tl.append(t)
 
     #Draw Mouse ID
@@ -118,10 +113,10 @@ def print_mice(win, mice_dict, mouse_list, o_x, o_y, factor):
         for t in mouse_text:
             t.draw(win)
 
-        if curr.sacked in ('P', 'S'):
+        if curr.sacked in ('p', 's'):
             ln = Line(Point(x-rad, y+rad), Point(x+rad, y-rad))
             ln.draw(win)
-            if curr.sacked == 'S':
+            if curr.sacked == 's':
                 ln2 = Line(Point(x-rad, y-rad), Point(x+rad, y+rad))
                 ln2.draw(win)
 
