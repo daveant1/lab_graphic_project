@@ -7,10 +7,10 @@ import math
 #Output: updated shape
 def update_mouse(mouse, shape):
     shape.setFill('White')
-    if mouse.pregnant:
-        shape.setFill('Pink')
     if isinstance(mouse.age, int) and (mouse.age > 275):
         shape.setFill('Orange')
+    if mouse.pregnant:
+        shape.setFill('Pink')
     if not mouse.ET:
         shape.setOutline('Red')
         shape.setWidth(3)
