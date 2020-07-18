@@ -77,6 +77,7 @@ def parse_data(filename):
     # start = perf_counter()
     mice, cages = gen_objs(mice_data)
     final_cages = finish_cages(cage_data, cages)
+    final_cages.sort(key = lambda x: str(x.status))
     # end = perf_counter()
     # print('parsing time: ', end-start)
     # for c in final_cages:
