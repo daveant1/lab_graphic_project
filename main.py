@@ -3,6 +3,7 @@ from data_parser import *
 from print_func import *
 import re
 import os
+import time
 import math
 from PIL import Image
 from win32api import GetSystemMetrics
@@ -10,9 +11,11 @@ from win32api import GetSystemMetrics
 #Find monitor height dimension (subtract 19px to account for taskbar) and # of ouptut frames
 win_h = GetSystemMetrics(1) - 19
 
-#Inital data parsing and setup
-basename = os.path.dirname(os.getcwd())
-dir = os.listdir(basename)
+#Inital data parsing and setup....
+
+#Search base directory
+basedir = os.path.dirname(os.getcwd())
+dir = os.listdir(basedir)
 
 #Check for valid excel file
 for file in dir:
@@ -24,7 +27,11 @@ if match == None:
     sys.exit(0)
 filename = str(match.group(1)) + str(match.group(2))
 
+start = time.perf_counter()
+#Parse data
 mice, cages = parse_data(filename)
+
+#Calculate metrics for .txt output
 total_mice = len(mice.keys())
 total_cages = len(cages)
 total_litters = 0
@@ -34,10 +41,14 @@ for c in cages:
     if c.pups > 0:
         total_litters += 1
         total_pups += c.pups
-    if c.status == 'PREGNANT':
+for m in mice.keys():
+    if mice[m].pregnant:
         total_pregnant += 1
 
-# start = perf_counter()
+end = time.perf_counter()
+print('Excel file parsed successfully: ', str('%.4f'%(end-start)) + 's')
+
+start = time.perf_counter()
 #Set up base layer dimensions based on number of cages for default (720,base_y) window
 num_frames = math.ceil(len(cages)/40)
 
@@ -55,13 +66,12 @@ for i in range(num_frames):
     #initalize first cage coordinates
     x1, y1 = 0, 0
     x2, y2 = 143, 159
-    row_counter = 0   #a counter to realize when we have finished drawing a row of cages
+    row_counter = 0 
 
-    #loop to draw cages (base layer of rectangles)
-    #Each cage is 144x160 px by default
+    #loop to draw cages (base layer of rectangles), 144x160px
     for c in cage_list:
-        r = Rectangle(Point(x1, y1), Point(x2,y2))   #generate new cage
-        r = update_cage(c,r)    #update cage color
+        r = Rectangle(Point(x1, y1), Point(x2,y2))
+        r = update_cage(c,r)
         r.draw(win)
         cage_text = gen_cage_text(c, r, scale_f)
         for t in cage_text:
@@ -70,33 +80,37 @@ for i in range(num_frames):
         x1 = x2
         x2 += 144
         row_counter+=1
-        if row_counter > 4:     #reset x coordinates for next row of cages
+        if row_counter > 4:     #reset coordinates for next row of cages
             x1, x2 = 0, 143
             y1 = y2
             y2 += 160
             row_counter = 0
 
-    #Rescale objects in window to fit window size
+    #Rescale tk objects to fit window size
     win.addtag_all('all')
     win.scale('all', 0, 0, scale_f, scale_f)
-    win.postscript(file = 'image.eps', colormode = 'color')
+    win.postscript(file = 'graphic.eps', colormode = 'color')
 
-    #Set desired dimensions for rescaling eps conversion
-    pic = Image.open('image.eps')
+    #Open postscript graphic file
+    pic = Image.open('graphic.eps')
     pic.load(scale=10)
 
+    #Set desired dimensions for rescaling eps conversion
     factor = max(720/pic.size[0], 1280/pic.size[1])
     final_size = (int(pic.size[0] * factor), int(pic.size[1] * factor))
 
-    #Resize to fit the target size
+    #Resize to fit target size
     pic = pic.resize(final_size, Image.ANTIALIAS)
 
     # Save to PNG
     pic.save('../'+ match.group(1) + '-'+ str(i) + '.png')
     win.close()
 
-print('Colony graphic saved successfully.')
+end = time.perf_counter()
+print('Colony graphic saved successfully: ', str('%.4f'%(end-start)) + 's')
 
+start= time.perf_counter()
+#Save colony stats to .txt file
 col_txt = open('../'+'Colony_Data_'+ match.group(1) + '.txt', 'w')
 print('Total Number of Cages:', total_cages,'\n', file = col_txt)
 print('Total Number of Mice:', total_mice,'\n', file = col_txt)
@@ -105,6 +119,6 @@ print('Total Number of Pups:', int(total_pups),'\n', file = col_txt)
 print('Total Number of Pregancies:', total_pregnant, file = col_txt)
 col_txt.close()
 
-print('Colony stat file saved successfully.')
-# end = perf_counter()
-# print('printing time:', end-start)
+end = time.perf_counter()
+print('Colony stat file saved successfully: ', str('%.4f'%(end-start)) + 's')
+print('Graphic generation process complete!')
