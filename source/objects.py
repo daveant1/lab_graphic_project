@@ -1,7 +1,6 @@
 class mouse:
     def __init__(self, ID):
         self.ID = ID  # Mouse ID (string)
-        self.idx = 0
         self.CID = ''  # Cage ID (string)
         self.ET = True  # Eartag (bool)
         self.sex = False  # False: Female, True: Male

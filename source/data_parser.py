@@ -41,14 +41,16 @@ def gen_objs(df, df2):
     #Loop to initalize all mice objects
     for i in range(len(m_ls)):
         new_mouse = mouse(str(m_ls[i]))
-        new_mouse.idx = i
         new_mouse.CID = str(c_ls[i])
         if str(df['Ear Tag?'][i]).lower() in ('n', 'no'):
             new_mouse.ET = False
         if str(df['Sex'][i]).lower() == 'm':     #False: Female, True: Male
             new_mouse.sex = True
         if not isinstance(df['Age (days)'][i], float):
-            new_mouse.age = df['Age (days)'][i]
+            if isinstance(df['Age (days)'][i], str):
+                new_mouse.age = str(df['Age (days)'][i])
+            else:
+                new_mouse.age = int(df['Age (days)'][i])
         if str(df['Pregnant?'][i]).lower() in ('y', 'yes'):
             new_mouse.pregnant = True
         new_mouse.sacked = str(df['Sacked Status: Potential (P), Sacked (S)'][i]).lower() #Blank, potential for sack (p), or already sacked (s)
