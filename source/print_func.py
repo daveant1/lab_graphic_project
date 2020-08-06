@@ -49,7 +49,6 @@ def gen_cage_text(cage, shape, factor):
 
     #Draw Pup DOB and Wean Date
     if cage.pups > 0:
-        print(cage.DOB, cage.WD)
         dates = []
         date = str(cage.DOB)
         for i in range(2):
@@ -58,11 +57,11 @@ def gen_cage_text(cage, shape, factor):
             dates.append(match.group(2) + '/' + match.group(3) + '/' + match.group(1))
             date = str(cage.WD)
         dob_msg = str(int(cage.pups)) + ' pups DOB: ' + str(dates[0])
-        t = Text(Point(x, y+50), dob_msg)
+        t = Text(Point(x, y+55), dob_msg)
         t.setSize(math.ceil(10*factor))
         tl.append(t)
         wd_msg = 'Wean Date: ' + str(dates[1])
-        t = Text(Point(x, y+65), wd_msg)
+        t = Text(Point(x, y+70), wd_msg)
         t.setSize(math.ceil(10*factor))
         tl.append(t)
     return tl
