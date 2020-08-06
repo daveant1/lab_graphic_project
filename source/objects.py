@@ -18,3 +18,4 @@ class cage:
         self.status = ''  # status or X11 color name
         self.pups = 0  # Number of pups
         self.DOB = ''  # Pup date of birth
+        self.WD = '' #Pup wean date (DOB+25)

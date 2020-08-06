@@ -47,14 +47,22 @@ def gen_cage_text(cage, shape, factor):
     t.setStyle('bold')
     tl.append(t)
 
-    #Draw Pup DOB
+    #Draw Pup DOB and Wean Date
     if cage.pups > 0:
-        pos = Point(x, y+65)
-        #Reformat pup DOB and construct pup text
-        match = re.search(r'(\d*)\-(\d\d)\-(\d\d)', str(cage.DOB))
-        new_DOB = match.group(2) + '/' + match.group(3) + '/' + match.group(1)
-        pup_msg = str(int(cage.pups)) + ' pups DOB: ' + str(new_DOB)
-        t = Text(pos, pup_msg)
+        print(cage.DOB, cage.WD)
+        dates = []
+        date = str(cage.DOB)
+        for i in range(2):
+            #Reformat pup DOB or WD and construct pup text
+            match = re.search(r'(\d*)\-(\d\d)\-(\d\d)', date)
+            dates.append(match.group(2) + '/' + match.group(3) + '/' + match.group(1))
+            date = str(cage.WD)
+        dob_msg = str(int(cage.pups)) + ' pups DOB: ' + str(dates[0])
+        t = Text(Point(x, y+50), dob_msg)
+        t.setSize(math.ceil(10*factor))
+        tl.append(t)
+        wd_msg = 'Wean Date: ' + str(dates[1])
+        t = Text(Point(x, y+65), wd_msg)
         t.setSize(math.ceil(10*factor))
         tl.append(t)
     return tl
