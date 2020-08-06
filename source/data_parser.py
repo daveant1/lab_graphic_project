@@ -5,7 +5,7 @@ from objects import *
 #Output: dict of mouse objects and vector of cage objects
 def gen_objs(df, df2):
     mice = {}      #empty dict of mouse objects
-    cages = []     #empty vector of cage objects
+    cages = {}     #empty dict of cage objects
 
 #Construct and assign mouse vectors to cages
     c_ls = df['Cage ID'].tolist()      #list of all cages including repeats
@@ -21,7 +21,7 @@ def gen_objs(df, df2):
 
         if CID != prev_cage:    #Append new cage and reset vector
             new_cage.mice = self_mice
-            cages.append(new_cage)
+            cages[prev_cage] = new_cage
             new_cage = cage(CID)
             self_mice = []
             prev_cage = CID
@@ -30,13 +30,15 @@ def gen_objs(df, df2):
 
     #Construct and append final cage
     new_cage.mice = self_mice
-    cages.append(new_cage)
+    cages[CID] = new_cage
 
     #Update remaining cage attributes
-    for i in range(len(cages)):
-        cages[i].status = df2['Status/Condition'][i]
-        cages[i].pups = df2['Number of Pups'][i]
-        cages[i].DOB = df2['Pup DOB'][i]
+    for i in range(len(cages.keys()):
+        key = str(df2['Cage ID'][i])
+        cages[key].status = df2['Status/Condition'][i] #CONVERT TO COLOR LATER
+        cages[key].pups = df2['Number of Pups'][i]
+        cages[key].DOB = df2['Pup DOB'][i]
+        cages[key].WD = df2['Wean Date'][i]
 
     #Loop to initalize all mice objects
     for i in range(len(m_ls)):
