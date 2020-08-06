@@ -96,9 +96,9 @@ def print_mice(win, mice_dict, mouse_list, o_x, o_y, factor):
             rad = 10
         else:
             rad = 16
-        if curr.sex: 
+        if curr.sex:
             sh = Rectangle(Point(x-rad, y-rad), Point(x+rad, y+rad))
-        else:        
+        else:
             sh = Circle(Point(x, y), rad)
         sh = update_mouse(curr, sh)
         sh.draw(win)
