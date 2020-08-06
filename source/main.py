@@ -33,14 +33,14 @@ mice, cages = parse_data(filename)
 
 #Calculate metrics for .txt output
 total_mice = len(mice.keys())
-total_cages = len(cages)
+total_cages = len(cages.keys())
 total_litters = 0
 total_pups = 0
 total_pregnant = 0
-for c in cages:
-    if c.pups > 0:
+for CID in cages.keys():
+    if cages[CID].pups > 0:
         total_litters += 1
-        total_pups += c.pups
+        total_pups += cages[CID].pups
 for m in mice.keys():
     if mice[m].pregnant:
         total_pregnant += 1
@@ -59,9 +59,9 @@ for i in range(num_frames):
 
     c_idx = 40*i
     if i == (num_frames-1):
-        cage_list = cages[c_idx:]
+        cage_list = list(cages.keys())[c_idx:]
     else:
-        cage_list = cages[c_idx:c_idx+40]
+        cage_list = list(cages.keys())[c_idx:c_idx+40]
 
     #initalize first cage coordinates
     x1, y1 = 0, 0
@@ -69,7 +69,8 @@ for i in range(num_frames):
     row_counter = 0 
 
     #loop to draw cages (base layer of rectangles), 144x160px
-    for c in cage_list:
+    for CID in cage_list:
+        c = cages[CID]
         r = Rectangle(Point(x1, y1), Point(x2,y2))
         r = update_cage(c,r)
         r.draw(win)

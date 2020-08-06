@@ -2,38 +2,31 @@ import pandas as pd
 from objects import *
 
 #Input: pandas data frames df (mouse data) and df2 (cage data)
-#Output: dict of mouse objects and vector of cage objects
+#Output: dict of mouse objects and dict of cage objects
 def gen_objs(df, df2):
     mice = {}      #empty dict of mouse objects
     cages = {}     #empty dict of cage objects
 
-#Construct and assign mouse vectors to cages
+    #Construct and assign mouse vectors to cages
     c_ls = df['Cage ID'].tolist()      #list of all cages including repeats
     m_ls = df['Mouse ID'].tolist()      #list of all mouse IDs
 
-    #Loop to generate new cage entry based on new CID
-    prev_cage = str(c_ls[0])
-    new_cage = cage(str(c_ls[0]))
-    self_mice = []
-
-    for i in range(len(c_ls)):
+    #Loop to generate cage dict from mouse df
+    for i in range(len(m_ls)):
         CID = str(c_ls[i])
+        if CID not in cages.keys():    #Construct new entry if no key
+            cages[CID] = cage(CID)
+        cages[CID].mice.append(i)
 
-        if CID != prev_cage:    #Append new cage and reset vector
-            new_cage.mice = self_mice
-            cages[prev_cage] = new_cage
-            new_cage = cage(CID)
-            self_mice = []
-            prev_cage = CID
+    #Add cages exclusive to the cage df (not in mouse df), so these cages have no mice
+    cdf_ls = df2['Cage ID'].tolist()
+    for CID in cdf_ls:
+        CID = str(CID)
+        if CID not in cages.keys():
+            cages[CID] = cage(CID)
 
-        self_mice.append(i)     #Append mouse idx
-
-    #Construct and append final cage
-    new_cage.mice = self_mice
-    cages[CID] = new_cage
-
-    #Update remaining cage attributes
-    for i in range(len(cages.keys()):
+    #Update remaining cage attributes from cage df
+    for i in range(len(cdf_ls)):
         key = str(df2['Cage ID'][i])
         cages[key].status = df2['Status/Condition'][i] #CONVERT TO COLOR LATER
         cages[key].pups = df2['Number of Pups'][i]
@@ -78,6 +71,8 @@ def parse_data(filename):
 
     #Construct and sort mice/cage objects
     mice, cages = gen_objs(mice_data, cage_data)
-    cages.sort(key = lambda x: str(x.status))
+    # cages.sort(key = lambda x: str(x.priority))
+    #WE MUST SORT CAGES BY CONDITION PRIORITY
+    #Consider setting priority member variable for cage
 
     return mice, cages
