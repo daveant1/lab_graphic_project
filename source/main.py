@@ -29,7 +29,7 @@ filename = str(match.group(1)) + str(match.group(2))
 
 start = time.perf_counter()
 #Parse data
-mice, cages = parse_data(filename)
+mice, cages, conds = parse_data(filename)
 
 #Calculate metrics for .txt output
 total_mice = len(mice.keys())

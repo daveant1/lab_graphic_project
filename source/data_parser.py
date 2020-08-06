@@ -2,15 +2,16 @@ import pandas as pd
 from objects import *
 
 #Input: pandas data frames df (mouse data) and df2 (cage data)
-#Output: dict of mouse objects and dict of cage objects
+#Output: dict of mouse objects, dict of cage objects, and dict of conditions
 def gen_objs(df, df2):
     mice = {}      #empty dict of mouse objects
     cages = {}     #empty dict of cage objects
+    conds = {}
 
     #Construct and assign mouse vectors to cages
     c_ls = df['Cage ID'].tolist()      #list of all cages including repeats
     m_ls = df['Mouse ID'].tolist()      #list of all mouse IDs
-
+    cond_ls = df2['Status/Condition'].tolist()
     #Loop to generate cage dict from mouse df
     for i in range(len(m_ls)):
         CID = str(c_ls[i])
@@ -55,7 +56,14 @@ def gen_objs(df, df2):
             new_mouse.runt = True
         mice[i] = new_mouse
 
-    return mice, cages
+    #Loop to initalize conditions dict
+    for i in range(len(df2['Condition'].tolist())):
+        key = str(df2['Condition'][i]).lower()
+        if key not in conds.keys():
+            conds[key] = str(df2['Color'][i]).lower()
+    print(conds)
+            
+    return mice, cages, conds
 
 
 def parse_data(filename):
@@ -70,9 +78,9 @@ def parse_data(filename):
     cage_data.reset_index(drop = True, inplace = True)
 
     #Construct and sort mice/cage objects
-    mice, cages = gen_objs(mice_data, cage_data)
+    mice, cages, conds = gen_objs(mice_data, cage_data)
     # cages.sort(key = lambda x: str(x.priority))
     #WE MUST SORT CAGES BY CONDITION PRIORITY
     #Consider setting priority member variable for cage
 
-    return mice, cages
+    return mice, cages, conds
