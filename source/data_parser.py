@@ -6,12 +6,22 @@ from objects import *
 def gen_objs(df, df2):
     mice = {}      #empty dict of mouse objects
     cages = {}     #empty dict of cage objects
-    conds = {}
+    conds = {}      #condition/status dict (key: status, value: (Color, Priority integer))
 
     #Construct and assign mouse vectors to cages
     c_ls = df['Cage ID'].tolist()      #list of all cages including repeats
     m_ls = df['Mouse ID'].tolist()      #list of all mouse IDs
-    cond_ls = df2['Status/Condition'].tolist()
+    
+    #Loop to initalize conditions dict
+    pri = 0
+    for i in range(len(df2['Condition'].tolist())):
+        if not isinstance(df2['Condition'][i], float):
+            key = str(df2['Condition'][i]).lower()
+            if key not in conds.keys():
+                conds[key] = (str(df2['Color'][i]).lower(), int(pri))
+                pri+=1
+    print(conds)
+
     #Loop to generate cage dict from mouse df
     for i in range(len(m_ls)):
         CID = str(c_ls[i])
@@ -29,7 +39,11 @@ def gen_objs(df, df2):
     #Update remaining cage attributes from cage df
     for i in range(len(cdf_ls)):
         key = str(df2['Cage ID'][i])
-        cages[key].status = df2['Status/Condition'][i] #CONVERT TO COLOR LATER
+        status = df2['Status/Condition'][i]     #CONVERT TO COLOR LATER
+        if not isinstance(status, float):
+            cages[key].status = status 
+            if str(status) in conds.keys():
+                cages[key].pri = conds[status][1]
         cages[key].pups = df2['Number of Pups'][i]
         cages[key].DOB = df2['Pup DOB'][i]
         cages[key].WD = df2['Wean Date'][i]
@@ -55,13 +69,6 @@ def gen_objs(df, df2):
         if str(df['Runt?'][i]).lower() in ('y', 'yes'):
             new_mouse.runt = True
         mice[i] = new_mouse
-
-    #Loop to initalize conditions dict
-    for i in range(len(df2['Condition'].tolist())):
-        key = str(df2['Condition'][i]).lower()
-        if key not in conds.keys():
-            conds[key] = str(df2['Color'][i]).lower()
-    print(conds)
             
     return mice, cages, conds
 
@@ -79,7 +86,7 @@ def parse_data(filename):
 
     #Construct and sort mice/cage objects
     mice, cages, conds = gen_objs(mice_data, cage_data)
-    # cages.sort(key = lambda x: str(x.priority))
+    # cages.sort(key = lambda x: conds[x.status])
     #WE MUST SORT CAGES BY CONDITION PRIORITY
     #Consider setting priority member variable for cage
 

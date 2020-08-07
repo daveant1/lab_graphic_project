@@ -14,6 +14,7 @@ class mouse:
 class cage:
     def __init__(self, CID):
         self.CID = CID  # Cage ID (string)
+        self.pri = 1000000    #Cage Priority (int)
         self.mice = []  # vector of mouse IDs
         self.status = ''  # status or X11 color name
         self.pups = 0  # Number of pups

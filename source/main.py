@@ -30,7 +30,7 @@ filename = str(match.group(1)) + str(match.group(2))
 start = time.perf_counter()
 #Parse data
 mice, cages, conds = parse_data(filename)
-sort_cages = sorted(cages.items(), key = lambda x: str(x[1].status).lower())  #sorted list of cage objects from which to print
+sort_cages = sorted(cages.items(), key = lambda x: x[1].pri)  #sorted list of cage objects from which to print
 
 #Calculate metrics for .txt output
 total_mice = len(mice.keys())

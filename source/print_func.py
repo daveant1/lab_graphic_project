@@ -23,7 +23,7 @@ def update_cage(cage, shape, conds):
     if isinstance(cage.status, str) and not cage.status.isspace():   #cell is blank, default color (X11) is white
         stat = str(cage.status).lower()
         if stat in conds.keys():
-            shape.setFill(conds[stat])
+            shape.setFill(conds[stat][0])
     else:
         shape.setFill('White')
     return shape
