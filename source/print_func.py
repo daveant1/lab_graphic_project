@@ -14,14 +14,16 @@ def update_mouse(mouse, shape):
         shape.setWidth(3)
     return shape
 
-#Function to update properties of cage shape
-def update_cage(cage, shape):
-    if str(cage.status).lower() == 'breeding':
-        shape.setFill('DarkGray')
-    elif str(cage.status).lower() == 'pregnant':
-        shape.setFill('Pink')
-    elif isinstance(cage.status, str) and not cage.status.isspace():   #cell is blank, default color (X11) is white
-        shape.setFill(cage.status)
+#Function to update properties of cage shape based on conds dict
+def update_cage(cage, shape, conds):
+    # if str(cage.status).lower() == 'breeding':
+    #     shape.setFill('DarkGray')
+    # elif str(cage.status).lower() == 'pregnant':
+    #     shape.setFill('Pink')
+    if isinstance(cage.status, str) and not cage.status.isspace():   #cell is blank, default color (X11) is white
+        stat = str(cage.status).lower()
+        if stat in conds.keys():
+            shape.setFill(conds[stat])
     else:
         shape.setFill('White')
     return shape

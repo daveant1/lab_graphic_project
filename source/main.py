@@ -30,6 +30,7 @@ filename = str(match.group(1)) + str(match.group(2))
 start = time.perf_counter()
 #Parse data
 mice, cages, conds = parse_data(filename)
+sort_cages = sorted(cages.items(), key = lambda x: str(x[1].status).lower())  #sorted list of cage objects from which to print
 
 #Calculate metrics for .txt output
 total_mice = len(mice.keys())
@@ -37,10 +38,10 @@ total_cages = len(cages.keys())
 total_litters = 0
 total_pups = 0
 total_pregnant = 0
-for CID in cages.keys():
-    if cages[CID].pups > 0:
+for c in sort_cages:
+    if c[1].pups > 0:
         total_litters += 1
-        total_pups += cages[CID].pups
+        total_pups += c[1].pups
 for m in mice.keys():
     if mice[m].pregnant:
         total_pregnant += 1
@@ -59,9 +60,9 @@ for i in range(num_frames):
 
     c_idx = 40*i
     if i == (num_frames-1):
-        cage_list = list(cages.keys())[c_idx:]
+        cage_list = sort_cages[c_idx:]
     else:
-        cage_list = list(cages.keys())[c_idx:c_idx+40]
+        cage_list = sort_cages[c_idx:c_idx+40]
 
     #initalize first cage coordinates
     x1, y1 = 0, 0
@@ -69,10 +70,10 @@ for i in range(num_frames):
     row_counter = 0 
 
     #loop to draw cages (base layer of rectangles), 144x160px
-    for CID in cage_list:
-        c = cages[CID]
+    for cage in cage_list:
+        c = cage[1]
         r = Rectangle(Point(x1, y1), Point(x2,y2))
-        r = update_cage(c,r)
+        r = update_cage(c,r,conds)
         r.draw(win)
         cage_text = gen_cage_text(c, r, scale_f)
         for t in cage_text:
