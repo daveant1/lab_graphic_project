@@ -20,10 +20,9 @@ def gen_objs(df, df2):
             if key not in conds.keys():
                 conds[key] = (str(df2['Color'][i]).lower(), int(pri))
                 pri+=1
-    print(conds)
 
     #Loop to generate cage dict from mouse df
-    for i in range(len(m_ls)):
+    for i in range(len(c_ls)):
         CID = str(c_ls[i])
         if CID not in cages.keys():    #Construct new entry if no key
             cages[CID] = cage(CID)
@@ -39,10 +38,10 @@ def gen_objs(df, df2):
     #Update remaining cage attributes from cage df
     for i in range(len(cdf_ls)):
         key = str(df2['Cage ID'][i])
-        status = df2['Status/Condition'][i]     #CONVERT TO COLOR LATER
-        if not isinstance(status, float):
-            cages[key].status = status 
-            if str(status) in conds.keys():
+        if not isinstance(df2['Status/Condition'][i], float):
+            status = str(df2['Status/Condition'][i]).lower()     #CONVERT TO COLOR LATER
+            cages[key].status = status
+            if status in conds.keys():
                 cages[key].pri = conds[status][1]
         cages[key].pups = df2['Number of Pups'][i]
         cages[key].DOB = df2['Pup DOB'][i]
@@ -86,8 +85,5 @@ def parse_data(filename):
 
     #Construct and sort mice/cage objects
     mice, cages, conds = gen_objs(mice_data, cage_data)
-    # cages.sort(key = lambda x: conds[x.status])
-    #WE MUST SORT CAGES BY CONDITION PRIORITY
-    #Consider setting priority member variable for cage
 
     return mice, cages, conds

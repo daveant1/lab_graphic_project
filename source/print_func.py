@@ -16,14 +16,9 @@ def update_mouse(mouse, shape):
 
 #Function to update properties of cage shape based on conds dict
 def update_cage(cage, shape, conds):
-    # if str(cage.status).lower() == 'breeding':
-    #     shape.setFill('DarkGray')
-    # elif str(cage.status).lower() == 'pregnant':
-    #     shape.setFill('Pink')
     if isinstance(cage.status, str) and not cage.status.isspace():   #cell is blank, default color (X11) is white
-        stat = str(cage.status).lower()
-        if stat in conds.keys():
-            shape.setFill(conds[stat][0])
+        if cage.status in conds.keys():
+            shape.setFill(conds[cage.status][0])
     else:
         shape.setFill('White')
     return shape
@@ -86,6 +81,7 @@ def gen_mouse_text(mouse, shape, factor):
     #Draw Mouse ID
     pos = Point(x, y+23)
     t = Text(pos, mouse.ID)
+    print(mouse.ID)
     t.setSize(math.floor(11*factor))
     if mouse.genotyped:
         t.setTextColor('Yellow')
@@ -98,7 +94,7 @@ def gen_mouse_text(mouse, shape, factor):
 def print_mice(win, mice_dict, mouse_list, o_x, o_y, factor):
     x = o_x + 24
     y = o_y + 50
-    m_count = 0    #Count of printed mice
+    m_count = 0    #Count of printed mice (for coordinate calculation)
     for idx in mouse_list:
         curr = mice_dict[idx]
         if curr.runt:
