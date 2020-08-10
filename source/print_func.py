@@ -81,7 +81,6 @@ def gen_mouse_text(mouse, shape, factor):
     #Draw Mouse ID
     pos = Point(x, y+23)
     t = Text(pos, mouse.ID)
-    print(mouse.ID)
     t.setSize(math.floor(11*factor))
     if mouse.genotyped:
         t.setTextColor('Yellow')
