@@ -16,7 +16,7 @@ RUN PROGRAM:
 1.)Place Excel (.xlsx) spreadsheet in main folder (lab_graphic_dist)
 	a.)Ensure it has name format: "00-00-0000.xlsx"
 	b.)Only one excel file should be present in the lab_graphic_dist folder at a time
-	b.)Previous spreadsheets can be stored in "prev_sheets" folder (two examples and a blank template included)
+	c.)Previous spreadsheets can be stored in "prev_sheets" folder (two examples and a blank template included)
 
 2.)Run 'Lab Graphic Generator.exe' to generate corresponding graphics and output text file
 	a.)The output graphics are in PNG format and will be saved in several 720x1280px frames based on the total number of cages
