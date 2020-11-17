@@ -1,13 +1,14 @@
 from graphics import *
 from data_parser import *
 from print_func import *
+from print_func2 import *
 import re
 import os
 import time
 import math
-import pyglet
+# import pyglet
 import pygame
-from pyglet import shapes
+# from pyglet import shapes
 from PIL import Image, ImageGrab
 from win32api import GetSystemMetrics
 
@@ -16,7 +17,6 @@ win_h = GetSystemMetrics(1) - 19
 
 #Initialize pygame's submodules for future use
 pygame.init()
-pygame.font.init()
 
 #Inital data parsing and setup....
 #Search base directory
@@ -64,15 +64,9 @@ scale_f = float(win_h/1280)
 for i in range(num_frames):
     #Code for Drawing Pillow Image side-by-side with original graphics.py code!
     win = GraphWin(filename, int(720*scale_f), win_h)
-    #Create blank 720x1280 pyglet window and enable drawing obj
-    # pygwin = pyglet.window.Window(720, 1280)
+    #Create blank 720x1280 pygame Surface
     pygwin = pygame.display.set_mode((720,1280))
     pygwin.fill('white')
-    # @pygwin.event
-    # def on_draw():
-    #     pygwin.clear()
-    #     print('draw!')
-
 
     c_idx = 40*i
     if i == (num_frames-1):
@@ -90,7 +84,7 @@ for i in range(num_frames):
         c = cage[1]
         r = Rectangle(Point(x1, y1), Point(x2,y2))
         r = update_cage(c,r,conds)
-        # r.draw(win)
+        r.draw(win)
 
         # cage_batch = pyglet.graphics.Batch()
         # r2 = shapes.Rectangle(x=0, y=50, width=14, height=16, batch=cage_batch)
@@ -98,14 +92,17 @@ for i in range(num_frames):
         # r2.draw()
         # pygwin.flip()
         
-        r2=0
-        color = update_cage2(c, r2, conds, pygwin)
-        r2 = pygame.draw.rect(pygwin, color, (x1, y1, 144, 160))
-        r2 = pygame.draw.rect(pygwin, 'black', (x1, y1, 144, 160), 3)
+        color = get_cage_color(c, conds)
+        r2 = pygame.draw.rect(pygwin, color, (x1, y1, 144, 160), border_radius = 10)
+        r2 = pygame.draw.rect(pygwin, 'black', (x1, y1, 144, 160), width = 2, border_radius = 10)
         cage_text = gen_cage_text(c, r, scale_f)
-        # for t in cage_text:
-        #     t.draw(win)
-        # print_mice(win, mice, c.mice, x1, y1, scale_f)
+        cage_text2 = gen_cage_text2(c, r2)
+        for t in cage_text:
+            t.draw(win)
+        print_mice(win, mice, c.mice, x1, y1, scale_f)
+        for t in cage_text2:
+            pygwin.blit(t[0], t[1])
+        print_mice2(pygwin, mice, c.mice, x1, y1)
         x1 = x2
         x2 += 144
         row_counter+=1

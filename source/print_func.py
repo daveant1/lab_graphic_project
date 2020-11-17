@@ -3,7 +3,6 @@ from graphics import *
 import re
 import math
 
-colors = ['white', 'black']
 #Function to update properties of mouse shape
 def update_mouse(mouse, shape):
     shape.setFill('White')
@@ -24,13 +23,6 @@ def update_cage(cage, shape, conds):
     else:
         shape.setFill('White')
     return shape
-
-#Function to update properties of cage shape based on conds dict
-def update_cage2(cage, shape, conds, pygwin):
-    if isinstance(cage.status, str) and not cage.status.isspace() and cage.status in conds.keys():   #If status is string and not empty space, check for condition color
-        return conds[cage.status][0]       #Fill rectangle to corresponding condition color
-    else:
-        return 'white'
 
 
 #Function to construct cage text elements
