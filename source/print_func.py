@@ -1,5 +1,4 @@
 from graphics import *
-# from main import pygwin
 import re
 import math
 
