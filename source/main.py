@@ -1,19 +1,10 @@
-from graphics import *
 from data_parser import *
-from print_func import *
 from print_func2 import *
 import re
 import os
 import time
 import math
-# import pyglet
 import pygame
-# from pyglet import shapes
-from PIL import Image, ImageGrab
-from win32api import GetSystemMetrics
-
-#Find monitor height dimension (subtract 19px to account for taskbar) and # of ouptut frames
-win_h = GetSystemMetrics(1) - 19
 
 #Initialize pygame's submodules for future use
 pygame.init()
@@ -59,11 +50,7 @@ start = time.perf_counter()
 #Set up base layer dimensions based on number of cages for default (720,base_y) window
 num_frames = math.ceil(len(cages)/40)
 
-scale_f = float(win_h/1280)
-
 for i in range(num_frames):
-    #Code for Drawing Pillow Image side-by-side with original graphics.py code!
-    win = GraphWin(filename, int(720*scale_f), win_h)
     #Create blank 720x1280 pygame Surface
     pygwin = pygame.display.set_mode((720,1280))
     pygwin.fill('white')
@@ -82,27 +69,14 @@ for i in range(num_frames):
     #loop to draw cages (base layer of rectangles), 144x160px
     for cage in cage_list:
         c = cage[1]
-        r = Rectangle(Point(x1, y1), Point(x2,y2))
-        r = update_cage(c,r,conds)
-        r.draw(win)
-
-        # cage_batch = pyglet.graphics.Batch()
-        # r2 = shapes.Rectangle(x=0, y=50, width=14, height=16, batch=cage_batch)
-        # r2 = update_cage2(c, r2, conds)
-        # r2.draw()
-        # pygwin.flip()
-        
         color = get_cage_color(c, conds)
         r2 = pygame.draw.rect(pygwin, color, (x1, y1, 144, 160), border_radius = 10)
         r2 = pygame.draw.rect(pygwin, 'black', (x1, y1, 144, 160), width = 2, border_radius = 10)
-        cage_text = gen_cage_text(c, r, scale_f)
-        cage_text2 = gen_cage_text2(c, r2)
+
+        cage_text = gen_cage_text(c, r2)
         for t in cage_text:
-            t.draw(win)
-        print_mice(win, mice, c.mice, x1, y1, scale_f)
-        for t in cage_text2:
             pygwin.blit(t[0], t[1])
-        print_mice2(pygwin, mice, c.mice, x1, y1)
+        print_mice(pygwin, mice, c.mice, x1, y1)
         x1 = x2
         x2 += 144
         row_counter+=1
@@ -112,37 +86,9 @@ for i in range(num_frames):
             y2 += 160
             row_counter = 0
 
-    # cage_batch.draw()
-    #Rescale tk objects to fit window size
-    win.addtag_all('all')
-    win.scale('all', 0, 0, scale_f, scale_f)
-    win.postscript(file = 'graphic.eps', colormode = 'color')
-
-    #Open postscript graphic file
-    pic = Image.open('graphic.eps')
-    pic.load(scale=10)
-
-    #Set desired dimensions for rescaling eps conversion
-    factor = max(720/pic.size[0], 1280/pic.size[1])
-    final_size = (int(pic.size[0] * factor), int(pic.size[1] * factor))
-
-    #Resize to fit target size
-    pic = pic.resize(final_size, Image.ANTIALIAS)
-
-    # pyglet.image.get_buffer_manager().get_color_buffer().save('../pygwin'+'-'+str(i)+'.png')
-    # pyglet.app.run()
-    # pygwin.close()
-    # x = win.winfo_rootx()
-    # y = win.winfo_rooty()
-    # x1 = x + win.winfo_width()
-    # y1 = y + win.winfo_height()
-    # ImageGrab.grab().crop((x, y, x1, y1)).save('../grab'+ str(i) + '.png')
-
-    # Save to PNG
-    pic.save('../'+ match.group(1) + '-'+ str(i) + '.png')
+    # Update display and save to PNG
     pygame.display.update()
-    pygame.image.save(pygwin, '../pygwin'+'-'+str(i)+'.png')
-    win.close()
+    pygame.image.save(pygwin, '../'+ match.group(1) + '-'+ str(i) + '.png')
     
 
 end = time.perf_counter()

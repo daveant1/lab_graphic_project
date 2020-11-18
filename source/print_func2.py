@@ -1,5 +1,4 @@
 import re
-import math
 import pygame
 
 pygame.font.init()
@@ -16,7 +15,7 @@ def get_cage_color(cage, conds):
         return 'white'
 
 #Function to construct cage text elements
-def gen_cage_text2(cage, shape):
+def gen_cage_text(cage, shape):
     tl=[]   #list of tuples of text objects with rect object dimension
     origin = shape.center    #Retrieve current coordinates
     x = origin[0]
@@ -68,7 +67,7 @@ def get_mouse_color(mouse):
     return color
 
 #Function to construct mouse text elements
-def gen_mouse_text2(mouse, shape):
+def gen_mouse_text(mouse, shape):
     tl=[]   #list of text objects to be drawn in main loop
     origin = shape.center    #Retrieve current coordinates
     x = origin[0]
@@ -97,7 +96,7 @@ def gen_mouse_text2(mouse, shape):
 #Draw all mice shapes and apply relevant properties
 #initalize coordinates (x and y always represent center of shape)
 #inital coordinate: (o_x, o_y) is the top left corner of current cage cell
-def print_mice2(pygwin, mice_dict, mouse_list, o_x, o_y):
+def print_mice(pygwin, mice_dict, mouse_list, o_x, o_y):
     x = o_x + 24
     y = o_y + 50
     m_count = 0    #Count of printed mice (for coordinate calculation)
@@ -120,7 +119,7 @@ def print_mice2(pygwin, mice_dict, mouse_list, o_x, o_y):
             if not curr.ET:
                 sh = pygame.draw.circle(pygwin, 'red', (x,y), rad, width = 3)
 
-        mouse_text = gen_mouse_text2(curr, sh)   #generate text elements for mouse as list
+        mouse_text = gen_mouse_text(curr, sh)   #generate text elements for mouse as list
         for t in mouse_text:
             pygwin.blit(t[0], t[1])
 
