@@ -7,6 +7,11 @@ FONT12 = pygame.font.SysFont("Times New Roman", 12)
 FONT11 = pygame.font.SysFont("Times New Roman", 11)
 FONT8 = pygame.font.SysFont("Times New Roman", 8)
 
+#Function to reformat date to visible text format 00/00/00
+def reformat_date (date):
+    match = re.search(r'(\d*)\-(\d\d)\-(\d\d)', date)
+    return (match.group(2) + '/' + match.group(3) + '/' + match.group(1))
+
 #Function to update properties of cage shape based on conds dict
 def get_cage_color(cage, conds):
     if isinstance(cage.status, str) and not cage.status.isspace() and cage.status in conds.keys():   #If status is string and not empty space, check for condition color
@@ -36,21 +41,15 @@ def gen_cage_text(cage, shape):
 
     #Draw Pup DOB and Wean Date
     if cage.pups > 0:
-        dates = []
-        date = str(cage.DOB)
-        for i in range(2):
-            #Reformat pup DOB or WD and construct pup text
-            match = re.search(r'(\d*)\-(\d\d)\-(\d\d)', date)
-            dates.append(match.group(2) + '/' + match.group(3) + '/' + match.group(1))
-            date = str(cage.WD)
-
-        dob_msg = str(int(cage.pups)) + ' pups DOB: ' + str(dates[0])
+        dob = reformat_date(str(cage.DOB))
+        dob_msg = str(int(cage.pups)) + ' pups DOB: ' + dob
         t = FONT12.render(dob_msg, True, 'black')
         t_area = t.get_rect()
         t_area.center = (x, y+55)
         tl.append((t, t_area))
 
-        wd_msg = 'Wean Date: ' + str(dates[1])
+        wd = reformat_date(str(cage.WD))
+        wd_msg = 'Wean Date: ' + wd
         t = FONT12.render(wd_msg, True, 'black')
         t_area = t.get_rect()
         t_area.center = (x, y+70)
@@ -91,6 +90,20 @@ def gen_mouse_text(mouse, shape):
     t_area = t.get_rect()
     t_area.center = (x, y+23)
     tl.append((t, t_area))
+
+    #Draw mouse date of death (DOD)
+    if str(mouse.DOD) != '' and not str(mouse.DOD).isspace():
+        sac_date = reformat_date(str(mouse.DOD))
+        if mouse.sacked == 's':
+            cod = 'Sacked'
+        else:
+            cod = 'Died'
+        sac_msg = cod + ':' + sac_date
+        t = FONT12.render(sac_msg, True, 'black')
+        t_area = t.get_rect()
+        t_area.center = (x, y+40)
+        tl.append(t)
+    
     return tl
 
 #Draw all mice shapes and apply relevant properties
