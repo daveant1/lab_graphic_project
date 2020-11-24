@@ -67,8 +67,8 @@ def gen_objs(df, df2):
             new_mouse.genotyped = True
         if str(df['Runt?'][i]).lower() in ('y', 'yes'):
             new_mouse.runt = True
-        if isinstance(df['Date of Death'], str) and not str(df['Date of Death'][i]).isspace():
-            new_mouse.DOD = str(df['Date of Death'][i])
+        new_mouse.DOD = str(df['Date of Death'][i])
+        
         mice[i] = new_mouse
             
     return mice, cages, conds

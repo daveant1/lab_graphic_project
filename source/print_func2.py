@@ -10,7 +10,10 @@ FONT8 = pygame.font.SysFont("Times New Roman", 8)
 #Function to reformat date to visible text format 00/00/00
 def reformat_date (date):
     match = re.search(r'(\d*)\-(\d\d)\-(\d\d)', date)
-    return (match.group(2) + '/' + match.group(3) + '/' + match.group(1))
+    if match:
+        return (match.group(2) + '/' + match.group(3) + '/' + match.group(1))
+    else:
+        return None
 
 #Function to update properties of cage shape based on conds dict
 def get_cage_color(cage, conds):
@@ -45,14 +48,14 @@ def gen_cage_text(cage, shape):
         dob_msg = str(int(cage.pups)) + ' pups DOB: ' + dob
         t = FONT12.render(dob_msg, True, 'black')
         t_area = t.get_rect()
-        t_area.center = (x, y+55)
+        t_area.center = (x, y+58)
         tl.append((t, t_area))
 
         wd = reformat_date(str(cage.WD))
         wd_msg = 'Wean Date: ' + wd
         t = FONT12.render(wd_msg, True, 'black')
         t_area = t.get_rect()
-        t_area.center = (x, y+70)
+        t_area.center = (x, y+71)
         tl.append((t, t_area))
     return tl
 
@@ -66,7 +69,7 @@ def get_mouse_color(mouse):
     return color
 
 #Function to construct mouse text elements
-def gen_mouse_text(mouse, shape):
+def gen_mouse_text(mouse, shape, o_x, o_y):
     tl=[]   #list of text objects to be drawn in main loop
     origin = shape.center    #Retrieve current coordinates
     x = origin[0]
@@ -92,17 +95,17 @@ def gen_mouse_text(mouse, shape):
     tl.append((t, t_area))
 
     #Draw mouse date of death (DOD)
-    if str(mouse.DOD) != '' and not str(mouse.DOD).isspace():
-        sac_date = reformat_date(str(mouse.DOD))
+    death_date = reformat_date(str(mouse.DOD)) 
+    if (death_date):
         if mouse.sacked == 's':
             cod = 'Sacked'
         else:
             cod = 'Died'
-        sac_msg = cod + ':' + sac_date
-        t = FONT12.render(sac_msg, True, 'black')
+        death_msg = cod + ': ' + death_date
+        t = FONT12.render(death_msg, True, 'black')
         t_area = t.get_rect()
-        t_area.center = (x, y+40)
-        tl.append(t)
+        t_area.center = (o_x + 71, o_y + 124)           #Use o_x, o_y (coords of top left of cage) as reference point
+        tl.append((t, t_area))                        #y=79 for center + 45 for offset = 124; x = 71 for center
     
     return tl
 
@@ -111,7 +114,7 @@ def gen_mouse_text(mouse, shape):
 #inital coordinate: (o_x, o_y) is the top left corner of current cage cell
 def print_mice(pygwin, mice_dict, mouse_list, o_x, o_y):
     x = o_x + 24
-    y = o_y + 50
+    y = o_y + 42
     m_count = 0    #Count of printed mice (for coordinate calculation)
     for idx in mouse_list:
         curr = mice_dict[idx]
@@ -132,19 +135,19 @@ def print_mice(pygwin, mice_dict, mouse_list, o_x, o_y):
             if not curr.ET:
                 sh = pygame.draw.circle(pygwin, 'red', (x,y), rad, width = 3)
 
-        mouse_text = gen_mouse_text(curr, sh)   #generate text elements for mouse as list
+        mouse_text = gen_mouse_text(curr, sh, o_x, o_y)   #generate text elements for mouse as list
         for t in mouse_text:
             pygwin.blit(t[0], t[1])
 
         #print sacked symbol (cross)
-        if curr.sacked in ('p', 's'):
+        if curr.sacked in ('p', 's', 'd'):
             pygame.draw.line(pygwin, 'black', (x-rad, y+rad), (x+rad, y-rad), 1)
-            if curr.sacked == 's':
+            if curr.sacked is not 'p':
                 pygame.draw.line(pygwin, 'black', (x-rad, y-rad), (x+rad, y+rad), 1)
 
         m_count+=1
         if(m_count==3):
             x -= 96
-            y += 48
+            y += 45
         else:
             x += 48
