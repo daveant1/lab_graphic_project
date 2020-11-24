@@ -16,13 +16,13 @@ dir = os.listdir(basedir)
 
 #Check for valid excel file
 for file in dir:
-    match = re.search(r'(\d+\-\d+\-\d+)(\.xlsx)', file)
+    match = re.search(r'(\w*\_)(\d+\-\d+\-\d+)(\.xlsx)', file)
     if match != None:
         break
 if match == None:
     print('Error: No file with name format 00-00-00.xlsx found!')
     sys.exit(0)
-filename = str(match.group(1)) + str(match.group(2))
+filename = str(match.group(1)) + str(match.group(2)) + str(match.group(3))
 
 start = time.perf_counter()
 #Parse data
@@ -88,7 +88,7 @@ for i in range(num_frames):
 
     # Update display and save to PNG
     pygame.display.update()
-    pygame.image.save(pygwin, '../'+ match.group(1) + '-'+ str(i) + '.png')
+    pygame.image.save(pygwin, '../'+ match.group(1) + match.group(2) + '-'+ str(i) + '.png')
     
 
 end = time.perf_counter()
@@ -96,7 +96,7 @@ print('Colony graphic saved successfully: ', str('%.4f'%(end-start)) + 's')
 
 start= time.perf_counter()
 #Save colony stats to .txt file
-col_txt = open('../'+'Colony_Data_'+ match.group(1) + '.txt', 'w')
+col_txt = open('../'+'Colony_Data_'+ match.group(1) + match.group(2) + '.txt', 'w')
 print('Total Number of Cages:', total_cages,'\n', file = col_txt)
 print('Total Number of Mice:', total_mice,'\n', file = col_txt)
 print('Total Number of Litters:', total_litters,'\n', file = col_txt)
