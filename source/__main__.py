@@ -11,9 +11,8 @@ def main():
     pygame.init()
 
     #Inital data parsing and setup....
-    #Search base directory
-    basedir = os.path.dirname(os.getcwd())
-    dir = os.listdir(basedir)
+    #Search curr directory
+    dir = os.listdir(os.getcwd())
 
     #Check for valid excel file
     for file in dir:
@@ -89,7 +88,7 @@ def main():
 
         # Update display and save to PNG
         pygame.display.update()
-        pygame.image.save(pygwin, '../'+ match.group(1) + match.group(2) + '-'+ str(i) + '.png')
+        pygame.image.save(pygwin, './'+ match.group(1) + match.group(2) + '-'+ str(i) + '.png')
         
 
     end = time.perf_counter()
@@ -97,7 +96,7 @@ def main():
 
     start= time.perf_counter()
     #Save colony stats to .txt file
-    col_txt = open('../'+'Colony_Data_'+ match.group(1) + match.group(2) + '.txt', 'w')
+    col_txt = open('./'+'Colony_Data_'+ match.group(1) + match.group(2) + '.txt', 'w')
     print('Total Number of Cages:', total_cages,'\n', file = col_txt)
     print('Total Number of Mice:', total_mice,'\n', file = col_txt)
     print('Total Number of Litters:', total_litters,'\n', file = col_txt)
