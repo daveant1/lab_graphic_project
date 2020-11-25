@@ -142,7 +142,8 @@ def print_mice(pygwin, mice_dict, mouse_list, o_x, o_y):
         #print sacked symbol (cross)
         if curr.sacked in ('p', 's', 'd'):
             pygame.draw.line(pygwin, 'black', (x-rad, y+rad), (x+rad, y-rad), 1)
-            if curr.sacked is not 'p':
+            p = 'p'
+            if curr.sacked != p:
                 pygame.draw.line(pygwin, 'black', (x-rad, y-rad), (x+rad, y+rad), 1)
 
         m_count+=1
