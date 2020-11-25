@@ -17,7 +17,7 @@ def main():
 
     #Check for valid excel file
     for file in dir:
-        match = re.search(r'(\w*\_)(\d+\-\d+\-\d+)(\.xlsx)', file)
+        match = re.search(r'(\w*\_*)(\d+\-\d+\-\d+)(\.xlsx)', file)
         if match != None:
             break
     if match == None:
@@ -90,7 +90,7 @@ def main():
         # Update display and save to PNG
         pygame.display.update()
         pygame.image.save(pygwin, './'+ match.group(1) + match.group(2) + '-'+ str(i) + '.png')
-        
+
 
     end = time.perf_counter()
     print('Colony graphic saved successfully: ', str('%.4f'%(end-start)) + 's')
