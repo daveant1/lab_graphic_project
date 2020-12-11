@@ -9,6 +9,7 @@ class mouse:
         self.sacked = ''  # Sack status
         self.genotyped = False
         self.runt = False
+        self.DOD = ''   #Date of Death
 
 
 class cage:

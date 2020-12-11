@@ -11,7 +11,7 @@ def gen_objs(df, df2):
     #Construct and assign mouse vectors to cages
     c_ls = df['Cage ID'].tolist()      #list of all cages including repeats
     m_ls = df['Mouse ID'].tolist()      #list of all mouse IDs
-    
+
     #Loop to initalize conditions dict
     pri = 0
     for i in range(len(df2['Condition'].tolist())):
@@ -62,18 +62,20 @@ def gen_objs(df, df2):
                 new_mouse.age = int(df['Age (days)'][i])
         if str(df['Pregnant?'][i]).lower() in ('y', 'yes'):
             new_mouse.pregnant = True
-        new_mouse.sacked = str(df['Sacked Status: Potential (P), Sacked (S)'][i]).lower() #Blank, potential for sack (p), or already sacked (s)
+        new_mouse.sacked = str(df['Sacked Status: Potential (P), Sacked (S), Sacrificed (D)'][i]).lower() #Blank, potential for sack (p), or already sacked (s)
         if str(df['Genotyped?'][i]).lower() in ('y', 'yes'):
             new_mouse.genotyped = True
         if str(df['Runt?'][i]).lower() in ('y', 'yes'):
             new_mouse.runt = True
+        new_mouse.DOD = str(df['Date of Death'][i])
+        
         mice[i] = new_mouse
-            
+
     return mice, cages, conds
 
 
 def parse_data(filename):
-    file = open('../' + filename, 'rb')
+    file = open('./' + filename, 'rb')
 
     mice_data = pd.read_excel(file, sheet_name = 0, skiprows = 1)  #data frame generation (skip first row)
     mice_data.dropna(axis=0, how = 'all', inplace = True)   #drop blank rows and reset indices

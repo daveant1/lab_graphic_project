@@ -1,6 +1,0 @@
-Possible Errors:
-KeyError() : ........
-	There is an incorrect column title. The titles should be:
-
-TypeError(): .......
-	The excel file is incorrectly formatted or there is an unwanted character in an empty cell.
