@@ -17,13 +17,13 @@ def main():
 
     #Check for valid excel file
     for file in dir:
-        match = re.search(r'(\w*\_*)(\d+\-\d+\-\d+)(\.xlsx)', file)
+        match = re.search(r'(\w*)(\d\d\-\d\d\-\d+)(\.xlsx)', file)     # filename is "<Alphanumeric and _>00-00-0*.xlsx"
         if match != None:
             break
     if match == None:
-        print('Error: No file with name format 00-00-00.xlsx found!')
+        print('Error: No file with name format <prefix>00-00-0000.xlsx found! (Example: prefix_to_file_00-00-0000.xlsx)')
         sys.exit(0)
-    filename = str(match.group(1)) + str(match.group(2)) + str(match.group(3))
+    filename = match.group(0)
 
     start = time.perf_counter()
     #Parse data
