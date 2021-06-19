@@ -15,7 +15,7 @@ def gen_objs(df, df2):
     #Loop to initalize conditions dict
     pri = 0
     for i in range(len(df2['Condition'].tolist())):
-        if not isinstance(df2['Condition'][i], float):
+        if not pd.isnull(df2['Condition'][i]) and not df2['Condition'][i].isspace():
             key = str(df2['Condition'][i]).lower()
             if key not in conds.keys():
                 conds[key] = (str(df2['Color'][i]).lower(), int(pri))
@@ -38,7 +38,7 @@ def gen_objs(df, df2):
     #Update remaining cage attributes from cage df
     for i in range(len(cdf_ls)):
         key = str(df2['Cage ID'][i])
-        if not isinstance(df2['Status/Condition'][i], float):
+        if not pd.isnull(df2['Status/Condition'][i]):
             status = str(df2['Status/Condition'][i]).lower()
             cages[key].status = status
             if status in conds.keys():
@@ -55,7 +55,7 @@ def gen_objs(df, df2):
             new_mouse.ET = False
         if str(df['Sex'][i]).lower() == 'm':     #False: Female, True: Male
             new_mouse.sex = True
-        if not isinstance(df['Age (days)'][i], float):  #Check if cell is blank
+        if not pd.isnull(df['Age (days)'][i]):          #Check if cell is blank
             if isinstance(df['Age (days)'][i], str):    #Check if cell is string or whitespace (whitespace accounted for before printing)
                 new_mouse.age = str(df['Age (days)'][i])
             else:
