@@ -1,5 +1,7 @@
 from data_parser import *
 from print_func import *
+from log import *
+from error import *
 import re
 import os
 import sys
@@ -11,25 +13,14 @@ def main():
     #Initialize pygame's submodules for future use
     pygame.init()
 
+    #Parse filename
+    match, filename = parse_filename()
+
     #Inital data parsing and setup....
-    #Search curr directory
-    dir = os.listdir(os.getcwd())
-
-    #Check for valid excel file
-    for file in dir:
-        match = re.search(r'(\w*)(\d\d\-\d\d\-\d+)(\.xlsx)', file)     # filename is "<Alphanumeric and _>00-00-0*.xlsx"
-        if match != None:
-            break
-    if match == None:
-        print('Error: No file with name format <prefix>00-00-0000.xlsx found! (Example: prefix_to_file_00-00-0000.xlsx)')
-        sys.exit(0)
-    filename = match.group(0)
-
     start = time.perf_counter()
     #Parse data
     mice, cages, conds = parse_data(filename)
     sort_cages = sorted(cages.items(), key = lambda x: x[1].pri)  #sorted list of cage objects from which to print
-
     #Calculate metrics for .txt output
     total_mice = len(mice.keys())
     total_cages = len(cages.keys())
@@ -43,19 +34,18 @@ def main():
     for m in mice.keys():
         if mice[m].pregnant:
             total_pregnant += 1
-
     end = time.perf_counter()
-    print('Excel file parsed successfully: ', str('%.4f'%(end-start)) + 's')
 
+    st_parse(str('%.4f'%(end-start)))
+
+    #Print graphics
     start = time.perf_counter()
     #Set up base layer dimensions based on number of cages for default (720,base_y) window
     num_frames = math.ceil(len(cages)/40)
-
     for i in range(num_frames):
         #Create blank 720x1280 pygame Surface
         pygwin = pygame.display.set_mode((720,1280))
         pygwin.fill('white')
-
         c_idx = 40*i
         if i == (num_frames-1):
             cage_list = sort_cages[c_idx:]
@@ -90,13 +80,12 @@ def main():
         # Update display and save to PNG
         pygame.display.update()
         pygame.image.save(pygwin, './'+ match.group(1) + match.group(2) + '-'+ str(i) + '.png')
-
-
     end = time.perf_counter()
-    print('Colony graphic saved successfully: ', str('%.4f'%(end-start)) + 's')
 
+    st_graph(str('%.4f'%(end-start)))
+
+    #Generate colony stat file
     start= time.perf_counter()
-    #Save colony stats to .txt file
     col_txt = open('./'+'Colony_Data_'+ match.group(1) + match.group(2) + '.txt', 'w')
     print('Total Number of Cages:', total_cages,'\n', file = col_txt)
     print('Total Number of Mice:', total_mice,'\n', file = col_txt)
@@ -104,10 +93,10 @@ def main():
     print('Total Number of Pups:', int(total_pups),'\n', file = col_txt)
     print('Total Number of Pregancies:', total_pregnant, file = col_txt)
     col_txt.close()
-
     end = time.perf_counter()
-    print('Colony stat file saved successfully: ', str('%.4f'%(end-start)) + 's')
-    print('Graphic generation process complete!')
+
+    st_coldata(str('%.4f'%(end-start)))
+    st_done()
 
 #Entry point for pyinstaller
 if __name__ == "__main__":
