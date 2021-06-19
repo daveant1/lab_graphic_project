@@ -77,7 +77,7 @@ def gen_objs(df, df2):
 def parse_data(filename):
     file = open('./' + filename, 'rb')
 
-    mice_data = pd.read_excel(file, sheet_name = 0, skiprows = 1)  #data frame generation (skip first row)
+    mice_data = pd.read_excel(file, sheet_name = 0, skiprows = 1, engine = 'xlrd')  #data frame generation (skip first row)
     mice_data.dropna(axis=0, how = 'all', inplace = True)   #drop blank rows and reset indices
     mice_data.reset_index(drop = True, inplace = True)
 
