@@ -1,5 +1,5 @@
 from data_parser import *
-from print_func2 import *
+from print_func import *
 import re
 import os
 import sys
