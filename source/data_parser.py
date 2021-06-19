@@ -39,7 +39,7 @@ def gen_objs(df, df2):
     for i in range(len(cdf_ls)):
         key = str(df2['Cage ID'][i])
         if not isinstance(df2['Status/Condition'][i], float):
-            status = str(df2['Status/Condition'][i]).lower()     #CONVERT TO COLOR LATER
+            status = str(df2['Status/Condition'][i]).lower()
             cages[key].status = status
             if status in conds.keys():
                 cages[key].pri = conds[status][1]
@@ -55,14 +55,14 @@ def gen_objs(df, df2):
             new_mouse.ET = False
         if str(df['Sex'][i]).lower() == 'm':     #False: Female, True: Male
             new_mouse.sex = True
-        if not isinstance(df['Age (days)'][i], float):
-            if isinstance(df['Age (days)'][i], str):
+        if not isinstance(df['Age (days)'][i], float):  #Check if cell is blank
+            if isinstance(df['Age (days)'][i], str):    #Check if cell is string or whitespace (whitespace accounted for before printing)
                 new_mouse.age = str(df['Age (days)'][i])
             else:
                 new_mouse.age = int(df['Age (days)'][i])
         if str(df['Pregnant?'][i]).lower() in ('y', 'yes'):
             new_mouse.pregnant = True
-        new_mouse.sacked = str(df['Sacked Status: Potential (P), Sacked (S), Sacrificed (D)'][i]).lower() #Blank, potential for sack (p), or already sacked (s)
+        new_mouse.sacked = str(df['Sacked Status: Potential (P), Sacked (S), Sacrificed (D)'][i]).lower() #Blank, potential for sack (p), already sacked (s), or sacrificed (d)
         if str(df['Genotyped?'][i]).lower() in ('y', 'yes'):
             new_mouse.genotyped = True
         if str(df['Runt?'][i]).lower() in ('y', 'yes'):

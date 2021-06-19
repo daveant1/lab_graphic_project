@@ -1,0 +1,1 @@
+#Module that logs status messages or errors, including filename errors, parsing errors, execution timestamps, etc.
