@@ -87,7 +87,7 @@ def gen_mouse_text(mouse, shape, o_x, o_y):
 
     #Draw Mouse ID
     if mouse.genotyped:
-        t = FONT11.render(mouse.ID, True, 'yellow')
+        t = FONT11.render(mouse.ID, True, 'black', 'yellow')
     else:
         t = FONT11.render(mouse.ID, True, 'black')
     t_area = t.get_rect()
