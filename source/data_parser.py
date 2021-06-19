@@ -81,7 +81,7 @@ def parse_data(filename):
     mice_data.dropna(axis=0, how = 'all', inplace = True)   #drop blank rows and reset indices
     mice_data.reset_index(drop = True, inplace = True)
 
-    cage_data = pd.read_excel(file, sheet_name = 1, skiprows = 1)
+    cage_data = pd.read_excel(file, sheet_name = 1, skiprows = 1, engine = 'xlrd')
     cage_data.dropna(axis=0, how = 'all', inplace=True)
     cage_data.reset_index(drop = True, inplace = True)
 
