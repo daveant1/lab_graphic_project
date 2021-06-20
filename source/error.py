@@ -35,7 +35,6 @@ def detect_sheetnames(workbook):
             err_autosheet(key)
     return workbook
 
-
 #Subroutine of detect() that checks column headers
 def detect_headers(worksheet, dict_path):
     sp = SpellChecker(language=None, local_dictionary=dict_path, distance=3, case_sensitive=True)
@@ -58,7 +57,6 @@ def detect_headers(worksheet, dict_path):
         if key not in curr_headers:
             err_autoheader(key)
     return worksheet
-
 
 #Subroutine of detect() to check blank or whitespace cells
 def detect_cells(worksheet):
