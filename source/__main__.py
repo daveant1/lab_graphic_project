@@ -16,6 +16,9 @@ def main():
     #Parse filename
     match, filename = parse_filename()
 
+    #Detect, autocorrect and log errors
+    detect(filename)
+
     #Inital data parsing and setup....
     start = time.perf_counter()
     #Parse data
@@ -95,7 +98,7 @@ def main():
     col_txt.close()
     end = time.perf_counter()
 
-    st_coldata(str('%.4f'%(end-start)))
+    st_colony_data(str('%.4f'%(end-start)))
     st_done()
 
 #Entry point for pyinstaller
