@@ -22,40 +22,47 @@ def parse_filename():
 
 #Subroutine of detect() that checks sheetnames
 def detect_sheetnames(workbook):
-    sp = SpellChecker(language=None, local_dictionary='sheetname_dict.json', distance=3, case_sensitive=True)
+    #TODO: create dict(s) manually in code rather than introducing additional json files
+    sp = SpellChecker(language=None, distance=3, case_sensitive=True)
+    true_names = ['Mice', 'Cages']
+    for name in true_names:
+        sp.word_frequency.add(name)
     for word in sp.unknown(workbook.sheetnames):
         new_name = sp.correction(word)
         if new_name is not word:                    #Make sure correction found
             workbook[word].title = new_name
             st_autosheet(word, new_name)           #Log change to sheet name
-    with open('sheetname_dict.json') as f:
-        data = json.loads(f.read())
-    for key in data.keys():
-        if key not in workbook.sheetnames:
-            err_autosheet(key)
+    #Check if expected sheetnames all present
+    for name in true_names:
+        if name not in workbook.sheetnames:
+            err_autosheet(name)
     return workbook
 
 #Subroutine of detect() that checks column headers
-def detect_headers(worksheet, dict_path):
-    sp = SpellChecker(language=None, local_dictionary=dict_path, distance=3, case_sensitive=True)
+def detect_headers(worksheet):
+    if worksheet.title == 'Mice':
+        true_names = ['Mouse ID', 'Cage ID', 'Ear Tag?', 'Sex', 'DOB', 'Age (days)', 'Pregnant?', 'Sacked Status: Potential (P), Sacked (S), Sacrificed (D)', 'Date of Death', 'Genotyped?', 'Runt?', 'Comments']
+    elif worksheet.title == 'Cages':
+        true_names = ['Cage ID', 'Status/Condition', 'Number of Pups', 'Pup DOB', 'Wean Date', 'Condition', 'Color']
+    else: 
+        err_sheetname(worksheet.title)
+    sp = SpellChecker(language=None, distance=3, case_sensitive=True)
+    for name in true_names:
+        sp.word_frequency.add(name)
     headers = worksheet['2']
     head_hash = {h.value:str(h.column)+str(h.row) for h in headers if h.value is not None}   #Generate hash of header:position
     for word in sp.unknown(head_hash.keys()):
-        cell = worksheet[head_hash[word]]       #Select cell with incorrect word
         new_name = sp.correction(word)
         if new_name is not word:                    #Make sure correction found
+            cell = worksheet[head_hash[word]]       #Select cell with incorrect word
             cell.value = new_name
             st_autoheader(word, new_name)           #Log change to column header
-    #Create list of current headers
-    curr_headers = []
-    for h in headers:
-        curr_headers.append(h.value)
+    #Create list of current headers after autocorrection process
+    curr_headers = [h.value for h in headers if h.value is not None]
     #Check if expected headers all present
-    with open(dict_path) as f:
-        data = json.loads(f.read())
-    for key in data.keys():
-        if key not in curr_headers:
-            err_autoheader(key)
+    for name in true_names:
+        if name not in curr_headers:
+            err_autoheader(name)
     return worksheet
 
 #Subroutine of detect() to check blank or whitespace cells
@@ -75,11 +82,11 @@ def detect(filename):
     wb = detect_sheetnames(wb)          
     ws_m = wb['Mice']                   #Load worksheets
     ws_c = wb['Cages']
-    ws_m = detect_headers(ws_m, 'header_dict_m.json')
-    ws_c = detect_headers(ws_c, 'header_dict_c.json')
+    ws_m = detect_headers(ws_m)
+    ws_c = detect_headers(ws_c)
     # ws_m = detect_cells(ws_m)
     # ws_c = detect_cells(ws_c)
-    # wb.save('new.xlsx')                 #Save file
+    wb.save('new.xlsx')                 #Save file
 
     sys.exit(0)
 

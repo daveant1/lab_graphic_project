@@ -40,22 +40,28 @@ def st_autocell(position, old_val, new_val):
 
 #ERROR
 
-#Filename error
-def err_filename():
-    print('ERROR: No file with name format <prefix>00-00-0000.xlsx found! (Example: prefix_of_file_00-00-0000.xlsx)')
-    sys.exit(0)
-
 #Failed to find sheet name
 def err_autosheet(expect_name):
-    print('ERROR: Could not find sheet', expect_name)
+    print('ERROR: Could not find sheet', '"'+expect_name+'"')
     sys.exit(0)
 
 #Failed to find sheet name
 def err_autoheader(expect_name):
-    print('ERROR: Could not find column header', expect_name)
+    print('ERROR: Could not find column header', '"'+expect_name+'"')
     sys.exit(0)
 
 #Autoorrected cell value
 def err_autocell(position, old_val, new_val):
-    print('WARNING: Could not find a correction for cell', position)
+    print('WARNING: Could not find a correction for cell', '"'+position+'"')
     return
+
+#Filename error
+def err_filename():
+    print('ERROR: No file with name format <prefix>00-00-0000.xlsx found! (Example: prefix_of_file_00-00-0000.xlsx)')
+    sys.exit(0)
+    
+#Unrecognized sheet name
+def err_sheetname(sheetname):
+    print('ERROR: Did not recognize sheet name', sheetname)
+    sys.exit(0)
+    
