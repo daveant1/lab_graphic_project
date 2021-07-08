@@ -70,7 +70,7 @@ def detect_cells(worksheet):
     # Construct column headers dict (value:cell obj)
     headers = worksheet['2']
     col_dict = {h.value:h for h in headers if h.value is not None}
-    Check Mouse IDs
+    #Check Mouse IDs
     m_id_col = worksheet[col_dict['Mouse ID'].column]
     blank_count = 0
     for cell in m_id_col:
@@ -117,12 +117,20 @@ def correct_cell_m(cell, type):
 def correct_cell_c(cell, header):
     return
 
+def delete_blank_rows(worksheet):
+    for row in worksheet:
+        if not any(cell.value for cell in row): #Row is completely blank
+            worksheet.delete_rows(row[0].row)
+    return worksheet
+
 #Main error detection function: Calls subroutines for checking and correcting/logging sheet names, column headers, and cell values
 def detect(filename):
     wb = load_workbook(filename)        #Load workbook
     wb = detect_sheetnames(wb)          
     ws_m = wb['Mice']                   #Load worksheets
     ws_c = wb['Cages']
+    ws_m = delete_blank_rows(ws_m)      #Delete blank rows
+    ws_c = delete_blank_rows(ws_c)
     ws_m = detect_headers(ws_m)
     ws_c = detect_headers(ws_c)
     ws_m = detect_cells(ws_m)
