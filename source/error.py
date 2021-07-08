@@ -2,9 +2,9 @@
 import sys
 import os
 import re
+import pygame
 from openpyxl import load_workbook
 from spellchecker import SpellChecker
-import json
 from log import *
 
 #Function to search for and parse filename with regex
@@ -65,63 +65,85 @@ def detect_headers(worksheet):
             err_autoheader(name)
     return worksheet
 
-#Cell detection function; Iterates through cells and detects blank rows and cells
-def detect_cells(worksheet):
+#Mouse cell detection function; Iterates through selected columns and checks for blank cells
+def detect_cells_m(worksheet):
     # Construct column headers dict (value:cell obj)
     headers = worksheet['2']
-    col_dict = {h.value:h for h in headers if h.value is not None}
+    col_dict = {h.value:h.column for h in headers if h.value is not None}
+    failed = False     #bool to show when we have failed
     #Check Mouse IDs
-    m_id_col = worksheet[col_dict['Mouse ID'].column]
-    blank_count = 0
+    m_id_col = worksheet[col_dict['Mouse ID']]
     for cell in m_id_col:
-        if blank_count > 3:
-            break
-        if cell.value == None:
-            blank_count += 1
-            
-    #Check blank cells
-    # if worksheet.title == 'Mice':
-    #     for row in worksheet:
-    #         if not any(cell.value for cell in row): #Row is completely blank
-    #             continue
-    #         else:
-    #             for cell in row:
-    #                 if cell.value is None:
-    #                     correct_cell_m(cell, worksheet[str(cell.column)+'2'].value)
-    #     return worksheet
-    # elif worksheet.title == 'Cages':
-    #     for row in worksheet:
-    #         if not any(cell.value for cell in row): #Row is completely blank
-    #             continue
-    #         else:
-    #             for cell in row:
-    #                 if cell.value is None:
-    #                     correct_cell_c(cell, worksheet[str(cell.column)+'2'].value)
-    #     return worksheet
-    # else:
-    #     err_sheetname(worksheet.title)
+        if not cell.value or str(cell.value).isspace():
+            failed = True
+            err_autocell(str(cell.column)+str(cell.row), cell.value, 'Mouse ID')       
+    #Check Cage IDs
+    c_id_col = worksheet[col_dict['Cage ID']]
+    for cell in c_id_col:
+        if not cell.value or str(cell.value).isspace():
+            failed = True
+            err_autocell(str(cell.column)+str(cell.row), cell.value, 'Cage ID')
+    #Check Sex
+    sex_col = worksheet[col_dict['Sex']]
+    for cell in sex_col:
+        if str(cell.value).lower() not in ('f', 'm'):
+            old_val = cell.value
+            cell.value = 'F'
+            warn_autocell(str(cell.column)+str(cell.row), old_val, cell.value, 'Sex')
+    #Check Ages
+    age_col = worksheet[col_dict['Age (days)']]
+    for cell in age_col:
+        if not cell.value or str(cell.value).isspace():
+            old_val = cell.value
+            cell.value = 0
+            warn_autocell(str(cell.column)+str(cell.row), old_val, cell.value, 'Age')
+        elif ' ' in str(cell.value):     #Check if contains whitespace
+            old_val = cell.value
+            cell.value = cell.value.strip()
+            st_autocell(str(cell.column)+str(cell.row), old_val, cell.value, 'Age')
+    if failed:
+        err_autocell_gen('Mice')
+    return worksheet
 
-#Mouse cell correction function; Reads column header and attempts correction or throws err
-def correct_cell_m(cell, type):
-    if header in ('Ear Tag?', 'DOB', 'Pregnant?', 'Sacked Status: Potential (P), Sacked (S), Died (D)', 'Date of Death'):
-        return
-    elif header in ('Mouse ID', 'Cage ID', ):
-        #Correct blank cell
-        return
-    elif header in ('Age', 'Days'):
-        #print something else
-        return
-    return
+#Cage cell detection function; Iterates through selected columns and checks for blank cells
+def detect_cells_c(worksheet):
+    # Construct column headers dict (value:cell obj)
+    headers = worksheet['2']
+    col_dict = {h.value:h.column for h in headers if h.value is not None}
+    failed = False
+    #Check Cage IDs
+    c_id_col = worksheet[col_dict['Cage ID']]
+    for cell in c_id_col:
+        if not cell.value or str(cell.value).isspace():
+            failed = True
+            err_autocell(str(cell.column)+str(cell.row), cell.value, 'Cage ID')
+    #Check condition/color chart
+    cond_col = worksheet[col_dict['Condition']]
+    color_list = pygame.color.THECOLORS.keys()
+    for cell in cond_col:
+        if cell.value:
+            if str(cell.value).isspace():
+                err_autocell(pos, cell.value, 'Condition')
+            else:
+                pos = str(col_dict['Color']) + str(cell.row)
+                val = worksheet[pos].value
+                if not val or val not in color_list:
+                    failed = True
+                    err_cond_color(pos, cell.value)
+    if failed:
+        err_autocell_gen('Cages')
+    return worksheet
 
-#Cage cell correction function; Reads column header and attempts correction or throws err
-def correct_cell_c(cell, header):
-    return
-
+#Function to simply delete the blank rows from the excel sheet to avoid confusion with blank cells
 def delete_blank_rows(worksheet):
     for row in worksheet:
         if not any(cell.value for cell in row): #Row is completely blank
             worksheet.delete_rows(row[0].row)
     return worksheet
+
+#Function to compare list of cages generated by mouse sheet and cage sheet
+def compare_cage_lists(l1, l2):
+    return
 
 #Main error detection function: Calls subroutines for checking and correcting/logging sheet names, column headers, and cell values
 def detect(filename):
@@ -133,8 +155,10 @@ def detect(filename):
     ws_c = delete_blank_rows(ws_c)
     ws_m = detect_headers(ws_m)
     ws_c = detect_headers(ws_c)
-    ws_m = detect_cells(ws_m)
-    # ws_c = detect_cells(ws_c)
+    # c_list = pygame.color.THECOLORS.keys()
+    # print(c_list)
+    ws_m = detect_cells_m(ws_m)
+    # ws_c = detect_cells_c(ws_c)
     wb.save('new.xlsx')                 #Save file
 
     sys.exit(0)

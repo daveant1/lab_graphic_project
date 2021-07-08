@@ -33,27 +33,37 @@ def st_autoheader(old_val, new_val):
     print('HEADER: Corrected column header', old_val, 'to header', new_val)
     return
 
-#Autoorrected cell value
-def st_autocell(position, old_val, new_val):
-    print('CELL: Corrected cell', position, 'from', old_val, 'to', new_val)
+#Autocorrected cell value
+def st_autocell(position, old_val, new_val, type):
+    print('CELL: Corrected', type, 'cell at', position, 'from', old_val, 'to', new_val)
     return
 
 #ERROR
 
 #Failed to find sheet name
 def err_autosheet(expect_name):
-    print('ERROR: Could not find sheet', '"'+expect_name+'"')
+    print('ERROR: Could not find column header "' + expect_name + '"')
     sys.exit(0)
 
 #Failed to find sheet name
 def err_autoheader(expect_name):
-    print('ERROR: Could not find column header', '"'+expect_name+'"')
+    print('ERROR: Could not find column header "' + expect_name + '"')
     sys.exit(0)
 
-#Autoorrected cell value
-def err_autocell(position, old_val, new_val):
-    print('WARNING: Could not find a correction for cell', '"'+position+'"')
+#Failed to autocorrect cell or cell requires manual correction
+def err_autocell(position, old_val, type):
+    print('ERROR: Could not find a correction for', type, 'cell', '"' + position + '".', 'Value =', old_val)
     return
+
+#Could not find corresponding color cell for condition cell
+def err_cond_color(position, old_val):
+    print('ERROR: Color cell', '"' + position + '"', 'is blank or not a valid color for condition', old_val)
+    return
+
+#General error when any part of cell correction fails
+def err_autocell_gen(sheetname):
+    print('ERROR: Cell autocorrection process failed for sheet "' + sheetname + '"')
+    sys.exit(0)
 
 #Filename error
 def err_filename():
@@ -64,4 +74,10 @@ def err_filename():
 def err_sheetname(sheetname):
     print('ERROR: Did not recognize sheet name', sheetname)
     sys.exit(0)
-    
+
+#WARNING
+
+#Autocorrected faulty cell
+def warn_autocell(position, old_val, new_val, type):
+    print('WARNING: ' + type + ' cell "' + position + '" is blank or not recognized. Defaulting to', new_val)
+    return
