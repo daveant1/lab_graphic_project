@@ -62,7 +62,7 @@ def gen_objs(df, df2):
                 new_mouse.age = int(df['Age (days)'][i])
         if str(df['Pregnant?'][i]).lower() in ('y', 'yes'):
             new_mouse.pregnant = True
-        new_mouse.sacked = str(df['Sacked Status: Potential (P), Sacked (S), Sacrificed (D)'][i]).lower() #Blank, potential for sack (p), already sacked (s), or sacrificed (d)
+        new_mouse.sacked = str(df['Sacked Status: Potential (P), Sacked (S), Died (D)'][i]).lower() #Blank, potential for sack (p), already sacked (s), or sacrificed (d)
         if str(df['Genotyped?'][i]).lower() in ('y', 'yes'):
             new_mouse.genotyped = True
         if str(df['Runt?'][i]).lower() in ('y', 'yes'):
