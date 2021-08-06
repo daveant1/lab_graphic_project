@@ -22,7 +22,7 @@ def main():
     #Inital data parsing and setup....
     start = time.perf_counter()
     #Parse data
-    mice, cages, conds = parse_data(filename)
+    mice, cages, conds = parse_data('new.xlsx')
     sort_cages = sorted(cages.items(), key = lambda x: x[1].pri)  #sorted list of cage objects from which to print
     #Calculate metrics for .txt output
     total_mice = len(mice.keys())

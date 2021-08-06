@@ -1,3 +1,4 @@
+#Module that utilizes pygame to draw graphics
 import re
 import pygame
 

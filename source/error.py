@@ -100,6 +100,9 @@ def detect_cells_m(worksheet):
         elif ' ' in str(cell.value):     #Check if contains whitespace
             cell.value.strip()
             st_stripcell(str(cell.column)+str(cell.row), 'Age')
+    #Check if sacked->date of death
+
+
     if failed:
         err_autocell_gen('Mice')
     return worksheet
@@ -116,6 +119,9 @@ def detect_cells_c(worksheet):
         if cell.value is None or str(cell.value).isspace():
             failed = True
             err_autocell(str(cell.column)+str(cell.row), cell.value, 'Cage ID')
+    #Check if pups->DOB(required)->Wean Date(not required)
+
+    
     #Check condition/color chart
     cond_col = worksheet[col_dict['Condition']][2:]
     color_list = pygame.color.THECOLORS.keys()
@@ -123,7 +129,7 @@ def detect_cells_c(worksheet):
         if cond_cell.value is not None and not str(cond_cell.value).isspace():
             pos = str(col_dict['Color']) + str(cond_cell.row)
             color = worksheet[pos].value
-            if color is None or str(color).isspace() or color not in color_list:
+            if color is None or str(color).isspace() or str(color).lower() not in color_list:
                 failed = True
                 err_cond_color(pos, cond_cell.value)
     if failed:
@@ -154,7 +160,4 @@ def detect(filename):
     ws_m = detect_cells_m(ws_m)
     ws_c = detect_cells_c(ws_c)
     wb.save('new.xlsx')                 #Save file
-
-    sys.exit(0)
-
-
+    return
