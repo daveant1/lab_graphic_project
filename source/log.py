@@ -38,6 +38,10 @@ def st_autocell(position, old_val, new_val, type):
     print('CELL: Corrected', type, 'cell at', position, 'from', old_val, 'to', new_val)
     return
 
+def st_stripcell(position, type):
+    print('CELL: Stripped whitespace from', type, 'cell at', position)
+    return
+
 #ERROR
 
 #Failed to find sheet name
@@ -56,8 +60,8 @@ def err_autocell(position, old_val, type):
     return
 
 #Could not find corresponding color cell for condition cell
-def err_cond_color(position, old_val):
-    print('ERROR: Color cell', '"' + position + '"', 'is blank or not a valid color for condition', old_val)
+def err_cond_color(position, condition):
+    print('ERROR: Color cell', '"' + position + '"', 'is blank or not a valid color for condition', condition)
     return
 
 #General error when any part of cell correction fails

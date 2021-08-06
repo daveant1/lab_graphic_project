@@ -72,35 +72,34 @@ def detect_cells_m(worksheet):
     col_dict = {h.value:h.column for h in headers if h.value is not None}
     failed = False     #bool to show when we have failed
     #Check Mouse IDs
-    m_id_col = worksheet[col_dict['Mouse ID']]
+    m_id_col = worksheet[col_dict['Mouse ID']][2:]      #Skip headers and blank cells
     for cell in m_id_col:
-        if not cell.value or str(cell.value).isspace():
+        if cell.value is None or str(cell.value).isspace():
             failed = True
             err_autocell(str(cell.column)+str(cell.row), cell.value, 'Mouse ID')       
     #Check Cage IDs
-    c_id_col = worksheet[col_dict['Cage ID']]
-    for cell in c_id_col:
-        if not cell.value or str(cell.value).isspace():
+    c_id_col = worksheet[col_dict['Cage ID']][2:]
+    for cell in c_id_col[2:]:
+        if cell.value is None or str(cell.value).isspace():
             failed = True
             err_autocell(str(cell.column)+str(cell.row), cell.value, 'Cage ID')
     #Check Sex
-    sex_col = worksheet[col_dict['Sex']]
+    sex_col = worksheet[col_dict['Sex']][2:]
     for cell in sex_col:
         if str(cell.value).lower() not in ('f', 'm'):
             old_val = cell.value
             cell.value = 'F'
             warn_autocell(str(cell.column)+str(cell.row), old_val, cell.value, 'Sex')
     #Check Ages
-    age_col = worksheet[col_dict['Age (days)']]
+    age_col = worksheet[col_dict['Age (days)']][2:]
     for cell in age_col:
-        if not cell.value or str(cell.value).isspace():
+        if cell.value is None or str(cell.value).isspace():
             old_val = cell.value
             cell.value = 0
             warn_autocell(str(cell.column)+str(cell.row), old_val, cell.value, 'Age')
         elif ' ' in str(cell.value):     #Check if contains whitespace
-            old_val = cell.value
-            cell.value = cell.value.strip()
-            st_autocell(str(cell.column)+str(cell.row), old_val, cell.value, 'Age')
+            cell.value.strip()
+            st_stripcell(str(cell.column)+str(cell.row), 'Age')
     if failed:
         err_autocell_gen('Mice')
     return worksheet
@@ -112,24 +111,21 @@ def detect_cells_c(worksheet):
     col_dict = {h.value:h.column for h in headers if h.value is not None}
     failed = False
     #Check Cage IDs
-    c_id_col = worksheet[col_dict['Cage ID']]
+    c_id_col = worksheet[col_dict['Cage ID']][2:]
     for cell in c_id_col:
-        if not cell.value or str(cell.value).isspace():
+        if cell.value is None or str(cell.value).isspace():
             failed = True
             err_autocell(str(cell.column)+str(cell.row), cell.value, 'Cage ID')
     #Check condition/color chart
-    cond_col = worksheet[col_dict['Condition']]
+    cond_col = worksheet[col_dict['Condition']][2:]
     color_list = pygame.color.THECOLORS.keys()
-    for cell in cond_col:
-        if cell.value:
-            if str(cell.value).isspace():
-                err_autocell(pos, cell.value, 'Condition')
-            else:
-                pos = str(col_dict['Color']) + str(cell.row)
-                val = worksheet[pos].value
-                if not val or val not in color_list:
-                    failed = True
-                    err_cond_color(pos, cell.value)
+    for cond_cell in cond_col:
+        if cond_cell.value is not None and not str(cond_cell.value).isspace():
+            pos = str(col_dict['Color']) + str(cond_cell.row)
+            color = worksheet[pos].value
+            if color is None or str(color).isspace() or color not in color_list:
+                failed = True
+                err_cond_color(pos, cond_cell.value)
     if failed:
         err_autocell_gen('Cages')
     return worksheet
@@ -155,10 +151,8 @@ def detect(filename):
     ws_c = delete_blank_rows(ws_c)
     ws_m = detect_headers(ws_m)
     ws_c = detect_headers(ws_c)
-    # c_list = pygame.color.THECOLORS.keys()
-    # print(c_list)
     ws_m = detect_cells_m(ws_m)
-    # ws_c = detect_cells_c(ws_c)
+    ws_c = detect_cells_c(ws_c)
     wb.save('new.xlsx')                 #Save file
 
     sys.exit(0)
