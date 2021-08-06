@@ -10,7 +10,7 @@ FONT8 = pygame.font.SysFont("Times New Roman", 8)
 
 #Function to reformat date to visible text format 00/00/00
 def reformat_date (date):
-    match = re.search(r'(\d*)\-(\d\d)\-(\d\d)', date)
+    match = re.search(r'(\d\d\d\d)\-(\d\d)\-(\d\d)', date)
     if match:
         return (match.group(2) + '/' + match.group(3) + '/' + match.group(1))
     else:

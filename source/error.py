@@ -22,7 +22,6 @@ def parse_filename():
 
 #Subroutine of detect() that checks sheetnames
 def detect_sheetnames(workbook):
-    #TODO: create dict(s) manually in code rather than introducing additional json files
     sp = SpellChecker(language=None, distance=3, case_sensitive=True)
     true_names = ['Mice', 'Cages']
     for name in true_names:
@@ -93,16 +92,25 @@ def detect_cells_m(worksheet):
     #Check Ages
     age_col = worksheet[col_dict['Age (days)']][2:]
     for cell in age_col:
-        if cell.value is None or str(cell.value).isspace():
+        if cell.value is None or str(cell.value).isspace():  #Age missing or just whitespace
             old_val = cell.value
             cell.value = 0
             warn_autocell(str(cell.column)+str(cell.row), old_val, cell.value, 'Age')
-        elif ' ' in str(cell.value):     #Check if contains whitespace
-            cell.value.strip()
-            st_stripcell(str(cell.column)+str(cell.row), 'Age')
+        elif not str(cell.value).isdigit():     #Non-digit chars in age (autocorrect)
+            old_val = cell.value
+            valid_chars = filter(str.isdigit, cell.value)
+            cell.value = "".join(valid_chars)
+            st_autocell(str(cell.column)+str(cell.row), old_val, cell.value, 'Age')
     #Check if sacked->date of death
-
-
+    sac_col = worksheet[col_dict['Sacked Status: Potential (P), Sacked (S), Died (D)']][2:]
+    for cell in sac_col:
+        if str(cell.value).lower() in ('s', 'd'):   #if sac'd or died include date of death
+            pos = str(col_dict['Date of Death']) + str(cell.row)
+            dod_cell = worksheet[pos]
+            if dod_cell.value is None or re.search(r'(\d\d\d\d)\-(\d\d)\-(\d\d)', dod_cell.value) is None:
+                old_val = dod_cell.value
+                dod_cell.value = '0000-00-00'
+                warn_autocell(pos, old_val, dod_cell.value, 'Date of Death')
     if failed:
         err_autocell_gen('Mice')
     return worksheet
@@ -120,8 +128,21 @@ def detect_cells_c(worksheet):
             failed = True
             err_autocell(str(cell.column)+str(cell.row), cell.value, 'Cage ID')
     #Check if pups->DOB(required)->Wean Date(not required)
-
-    
+    pup_col = worksheet[col_dict['Number of Pups']][2:]
+    for cell in pup_col: 
+        if cell.value is not None and str(cell.value).isdigit() and int(cell.value) > 0:    # check if pups is a number greater than 0
+            dob_pos = str(col_dict['Pup DOB']) + str(cell.row)
+            dob_cell = worksheet[dob_pos]
+            if dob_cell.value is None or re.search(r'(\d\d\d\d)\-(\d\d)\-(\d\d)', dob_cell.value) is None:
+                old_val = dob_cell.value
+                dob_cell.value = '0000-00-00'
+                warn_autocell(dob_pos, old_val, dob_cell.value, 'Pup DOB')
+            wd_pos = str(col_dict['Wean Date']) + str(cell.row)
+            wd_cell = worksheet[wd_pos]
+            if wd_cell.value is None or re.search(r'(\d\d\d\d)\-(\d\d)\-(\d\d)', wd_cell.value) is None:
+                old_val = wd_cell.value
+                wd_cell.value = None
+                warn_autocell(dob_pos, old_val, wd_cell.value, 'Wean Date')
     #Check condition/color chart
     cond_col = worksheet[col_dict['Condition']][2:]
     color_list = pygame.color.THECOLORS.keys()
