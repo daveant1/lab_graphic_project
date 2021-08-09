@@ -79,6 +79,10 @@ def err_sheetname(sheetname):
     print('ERROR: Did not recognize sheet name', sheetname)
     sys.exit(0)
 
+def err_dup_cid(cid):
+    print('ERROR: Duplicate Cage ID for Cage "'+cid+'"')
+    return
+
 #WARNING
 
 #Autocorrected faulty cell

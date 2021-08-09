@@ -77,13 +77,14 @@ def gen_objs(df, df2):
 def parse_data(filename):
     file = open(filename, 'rb')
 
-    mice_data = pd.read_excel(file, sheet_name = 0, skiprows = 1, engine = 'xlrd')  #data frame generation (skip first row)
-    mice_data.dropna(axis=0, how = 'all', inplace = True)   #drop blank rows and reset indices
-    mice_data.reset_index(drop = True, inplace = True)
+    #No longer necessary to remove empty rows; Switch to openpyxl engine for reading? Move all this logic over to error detection functions?
+    mice_data = pd.read_excel(file, sheet_name = 'Mice', skiprows = 1, engine = 'xlrd')  #data frame generation (skip first row)
+    # mice_data.dropna(axis=0, how = 'all', inplace = True)   #drop blank rows and reset indices
+    # mice_data.reset_index(drop = True, inplace = True)
 
-    cage_data = pd.read_excel(file, sheet_name = 1, skiprows = 1, engine = 'xlrd')
-    cage_data.dropna(axis=0, how = 'all', inplace=True)
-    cage_data.reset_index(drop = True, inplace = True)
+    cage_data = pd.read_excel(file, sheet_name = 'Cages', skiprows = 1, engine = 'xlrd')
+    # cage_data.dropna(axis=0, how = 'all', inplace=True)
+    # cage_data.reset_index(drop = True, inplace = True)
 
     #Construct and sort mice/cage objects
     mice, cages, conds = gen_objs(mice_data, cage_data)
