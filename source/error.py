@@ -149,14 +149,25 @@ def detect_cells_c(worksheet):
                 warn_autocell(dob_pos, old_val, wd_cell.value, 'Wean Date')
     #Check condition/color chart
     cond_col = worksheet[col_dict['Condition']][2:]
+    cond_set = set([])
     color_list = pygame.color.THECOLORS.keys()
     for cond_cell in cond_col:
         if cond_cell.value is not None and not str(cond_cell.value).isspace():
             pos = str(col_dict['Color']) + str(cond_cell.row)
             color = worksheet[pos].value
+            cond_set.add(cond_cell.value)
             if color is None or str(color).isspace() or str(color).lower() not in color_list:
                 failed = True
                 err_cond_color(pos, cond_cell.value)
+    #Check status/condition column for unrecognized condition
+    stat_col = worksheet[col_dict['Status/Condition']][2:]
+    for stat_cell in stat_col:
+        if stat_cell.value is not None and not str(stat_cell.value).isspace():
+            if stat_cell.value not in cond_set:
+                pos = str(stat_cell.column)+str(stat_cell.row)
+                old_val = stat_cell.value
+                stat_cell.value = cond_set[0]
+                warn_autocell(pos, old_val, stat_cell.value, 'Status/Condition')
     if failed:
         err_autocell_gen('Cages')
     return worksheet, cids
