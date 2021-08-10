@@ -38,9 +38,11 @@ def st_autocell(position, old_val, new_val, type):
     print('CELL: Corrected', type, 'cell at', position, 'from', old_val, 'to', new_val)
     return
 
+#Stripped whitespace from cell value
 def st_stripcell(position, type):
     print('CELL: Stripped whitespace from', type, 'cell at', position)
     return
+
 
 #ERROR
 
@@ -79,13 +81,25 @@ def err_sheetname(sheetname):
     print('ERROR: Did not recognize sheet name', sheetname)
     sys.exit(0)
 
+#Duplicate Cage IDs in Cages sheet
 def err_dup_cid(cid):
     print('ERROR: Duplicate Cage ID for Cage "'+cid+'"')
     return
 
+#Cage ID Missing from Cages sheet
+def err_miss_cage(cid):
+    print('ERROR: Missing cage; Cage ID"'+cid+'" is present in Mice sheet but not Cages sheet')
+    return
+
+
 #WARNING
 
-#Autocorrected faulty cell
+#Chose default value for cell
 def warn_autocell(position, old_val, new_val, type):
     print('WARNING: ' + type + ' cell "' + position + '" is blank or not recognized. Defaulting to', new_val)
+    return
+
+#Empty cages will be printed
+def warn_empty_cage(cid):
+    print('WARNING: Empty cage; Cage ID"'+cid+'" is present in Cages sheet but not Mice sheet')
     return
