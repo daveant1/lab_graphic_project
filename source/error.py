@@ -11,13 +11,12 @@ def parse_filename():
     dir = os.listdir(os.getcwd())
     #Check for valid excel file
     for file in dir:
-        match = re.search(r'(\w*)(\d\d\-\d\d\-\d+)(\.xlsx)', file)     #Filename is "<Alphanumeric and _>00-00-0*.xlsx"
-        if match != None:
+        re_fn = re.search(r'(\w*)(\d\d\-\d\d\-\d+)(\.xlsx)', file)     #Filename is "<Alphanumeric and _>00-00-0*.xlsx"
+        if re_fn != None:
             break
-    if match == None:
+    if re_fn == None:
         err_filename()
-    filename = match.group(0)
-    return match, filename
+    return re_fn
 
 #Subroutine of detect() that checks sheetnames
 def detect_sheetnames(workbook):
@@ -197,14 +196,11 @@ def compare_cage_lists(cids_m, cids_c):
 def detect(filename):
     wb = load_workbook(filename)        #Load workbook
     wb = detect_sheetnames(wb)          
-    ws_m = wb['Mice']                   #Load worksheets
-    ws_c = wb['Cages']
-    ws_m = delete_blank_rows(ws_m)      #Delete blank rows
-    ws_c = delete_blank_rows(ws_c)
-    ws_m = detect_headers(ws_m)
-    ws_c = detect_headers(ws_c)
+    ws_m, ws_c = wb['Mice'], wb['Cages']   #Load worksheets
+    ws_m, ws_c = delete_blank_rows(ws_m), delete_blank_rows(ws_c)   #Delete blank rows
+    ws_m, ws_c = detect_headers(ws_m), detect_headers(ws_c)
     ws_m, cids_m = detect_cells_m(ws_m)
     ws_c, cids_c = detect_cells_c(ws_c)
     compare_cage_lists(cids_m, cids_c)      #Detect mismatch/duplicate CIDs between Mice vs. Cages sheet
-    wb.save('new.xlsx')                 #Save file
+    wb.save('new.xlsx')                 #Save temp file
     return

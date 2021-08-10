@@ -14,10 +14,10 @@ def main():
     pygame.init()
 
     #Parse filename
-    match, filename = parse_filename()
+    match_fn = parse_filename()
 
     #Detect, autocorrect and log errors
-    detect(filename)
+    detect(match_fn.group(0))
 
     #Inital data parsing and setup....
     start = time.perf_counter()
@@ -82,14 +82,14 @@ def main():
 
         # Update display and save to PNG
         pygame.display.update()
-        pygame.image.save(pygwin, './'+ match.group(1) + match.group(2) + '-'+ str(i) + '.png')
+        pygame.image.save(pygwin, './'+ match_fn.group(1) + match_fn.group(2) + '-'+ str(i) + '.png')
     end = time.perf_counter()
 
     st_graph(str('%.4f'%(end-start)))
 
     #Generate colony stat file
     start= time.perf_counter()
-    col_txt = open('./'+'Colony_Data_'+ match.group(1) + match.group(2) + '.txt', 'w')
+    col_txt = open('./'+'Colony_Data_'+ match_fn.group(1) + match_fn.group(2) + '.txt', 'w')
     print('Total Number of Cages:', total_cages,'\n', file = col_txt)
     print('Total Number of Mice:', total_mice,'\n', file = col_txt)
     print('Total Number of Litters:', total_litters,'\n', file = col_txt)
