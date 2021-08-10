@@ -14,32 +14,24 @@ def gen_objs(df_m, df_c):
     for i in range(len(cond_ls)):
         cond = cond_ls[i]
         if not pd.isnull(cond) and not str(cond).isspace():
-            conds[pri] = str(df_c['Color'][i]).lower()
+            if cond not in conds.keys():
+                conds[cond] = (str(df_c['Color'][i]).lower(), pri)
             pri+=1
 
     #Generate cage dict from mouse df
-    c_ls = df_m['Cage ID'].tolist()      #list of all cages including repeats
-    for i in range(len(c_ls)):
-        CID = str(c_ls[i])
-        if CID not in cages.keys():    #Construct new entry if no key
-            cages[CID] = cage(CID)
-        cages[CID].mice.append(i)
-
-    #Add cages exclusive to the cage df (not in mouse df), so these cages have no mice
+    c_ls = df_m['Cage ID'].tolist()
     cdf_ls = df_c['Cage ID'].tolist()
-    for CID in cdf_ls:
-        CID = str(CID)
-        if CID not in cages.keys():
-            cages[CID] = cage(CID)
+    cid_set = set(c_ls + cdf_ls)
+    for CID in cid_set:
+        cages[CID] = cage(CID)
 
     #Update remaining cage attributes from cage df
     for i in range(len(cdf_ls)):
-        key = str(df_c['Cage ID'][i])
-        if not pd.isnull(df_c['Status/Condition'][i]):
-            status = str(df_c['Status/Condition'][i]).lower()
-            cages[key].status = status
-            if status in conds.keys():
-                cages[key].pri = conds[status][1]
+        CID = str(cdf_ls[i])
+        status = df_c['Status/Condition'][i]
+        if not pd.isnull(status) and not str(status).isspace():
+            cages[CID].color = conds[status][0]
+            cages[CID].pri = conds[status][1]
         cages[key].pups = df_c['Number of Pups'][i]
         cages[key].DOB = df_c['Pup DOB'][i]
         cages[key].WD = df_c['Wean Date'][i]
@@ -47,29 +39,27 @@ def gen_objs(df_m, df_c):
     #Initalize all mouse objects
     m_ls = df_m['Mouse ID'].tolist()      #list of all mouse IDs
     for i in range(len(m_ls)):
-        new_mouse = mouse(str(m_ls[i]))
-        new_mouse.CID = str(c_ls[i])
-        if str(df_m['Ear Tag?'][i]).lower() in ('n', 'no'):
-            new_mouse.ET = False
-        if str(df_m['Sex'][i]).lower() == 'm':     #False: Female, True: Male
-            new_mouse.sex = True
-        if not pd.isnull(df_m['Age (days)'][i]):          #Check if cell is blank
-            if isinstance(df_m['Age (days)'][i], str):    #Check if cell is string or whitespace (whitespace accounted for before printing)
-                new_mouse.age = str(df_m['Age (days)'][i])
-            else:
-                new_mouse.age = int(df_m['Age (days)'][i])
-        if str(df_m['Pregnant?'][i]).lower() in ('y', 'yes'):
-            new_mouse.pregnant = True
-        new_mouse.sacked = str(df_m['Sacked Status: Potential (P), Sacked (S), Died (D)'][i]).lower() #Blank, potential for sack (p), already sacked (s), or sacrificed (d)
-        if str(df_m['Genotyped?'][i]).lower() in ('y', 'yes'):
-            new_mouse.genotyped = True
-        if str(df_m['Runt?'][i]).lower() in ('y', 'yes'):
-            new_mouse.runt = True
-        new_mouse.DOD = str(df_m['Date of Death'][i])
-        
-        mice[i] = new_mouse
+        MID = str(m_ls[i])
+        if MID not in mice.keys():
+            new_mouse = mouse(MID)
+            CID = str(c_ls[i])
+            cages[CID].mice.append(MID)
+            if str(df_m['Ear Tag?'][i]).lower() in ('n', 'no'):
+                new_mouse.ET = False
+            if str(df_m['Sex'][i]).lower() == 'm':     #False: Female, True: Male
+                new_mouse.sex = True
+            new_mouse.age = int(df_m['Age (days)'][i])
+            if str(df_m['Pregnant?'][i]).lower() in ('y', 'yes'):
+                new_mouse.pregnant = True
+            new_mouse.sacked = str(df_m['Sacked Status: Potential (P), Sacked (S), Died (D)'][i]).lower() #Blank, potential for sack (p), already sacked (s), or died (d)
+            if str(df_m['Genotyped?'][i]).lower() in ('y', 'yes'):
+                new_mouse.genotyped = True
+            if str(df_m['Runt?'][i]).lower() in ('y', 'yes'):
+                new_mouse.runt = True
+            new_mouse.DOD = str(df_m['Date of Death'][i])
+            mice[MID] = new_mouse
 
-    return mice, cages, conds
+    return mice, cages
 
 
 def parse_data(filename):

@@ -22,18 +22,19 @@ def main():
     #Inital data parsing and setup....
     start = time.perf_counter()
     #Parse data
-    mice, cages, conds = parse_data('new.xlsx')
+    mice, cages = parse_data('new.xlsx')
     sort_cages = sorted(cages.items(), key = lambda x: x[1].pri)  #sorted list of cage objects from which to print
+
     #Calculate metrics for .txt output
     total_mice = len(mice.keys())
     total_cages = len(cages.keys())
     total_litters = 0
     total_pups = 0
     total_pregnant = 0
-    for c in sort_cages:
-        if c[1].pups > 0:
+    for c in cages.keys():
+        if cages[c].pups > 0:
             total_litters += 1
-            total_pups += c[1].pups
+            total_pups += cages[c].pups
     for m in mice.keys():
         if mice[m].pregnant:
             total_pregnant += 1
