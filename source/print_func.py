@@ -16,13 +16,6 @@ def reformat_date (date):
     else:
         return None
 
-#Function to update properties of cage shape based on conds dict
-def get_cage_color(cage, conds):
-    if isinstance(cage.status, str) and not cage.status.isspace() and cage.status in conds.keys():   #If status is string and not empty space, check for condition color
-        return conds[cage.status][0]       #Fill rectangle to corresponding condition color
-    else:
-        return 'white'
-
 #Function to construct cage text elements
 def gen_cage_text(cage, shape):
     tl=[]   #list of tuples of text objects with rect object dimension

@@ -16,7 +16,7 @@ class cage:
         self.CID = CID  # Cage ID (string)
         self.pri = 1000000    #Cage Priority/print order (int)
         self.mice = []  # vector of mouse IDs
-        self.color = ''  # X11 color name
+        self.color = 'white'  # X11 color name
         self.pups = 0  # Number of pups
         self.DOB = ''  # Pup date of birth
         self.WD = '' #Pup wean date (DOB+25)
