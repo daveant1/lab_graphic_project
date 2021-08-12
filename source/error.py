@@ -99,16 +99,20 @@ def detect_cells_m(worksheet):
             warn_autocell(str(cell.column)+str(cell.row), old_val, cell.value, 'Age')
         elif not str(cell.value).isdigit():     #Non-digit chars in age (autocorrect)
             old_val = cell.value
-            valid_chars = filter(str.isdigit, cell.value)
-            cell.value = "".join(valid_chars)
-            st_autocell(str(cell.column)+str(cell.row), old_val, cell.value, 'Age')
+            valid_chars = list(filter(str.isdigit, cell.value))
+            if valid_chars:
+                cell.value = "".join(valid_chars)
+                st_autocell(str(cell.column)+str(cell.row), old_val, cell.value, 'Age')
+            else:
+                cell.value = 0
+                warn_autocell(str(cell.column)+str(cell.row), old_val, cell.value, 'Age')
     #Check if sacked->date of death
     sac_col = worksheet[col_dict['Sacked Status: Potential (P), Sacked (S), Died (D)']][2:]
     for cell in sac_col:
         if str(cell.value).lower() in ('s', 'd'):   #if sac'd or died include date of death
             pos = str(col_dict['Date of Death']) + str(cell.row)
             dod_cell = worksheet[pos]
-            if dod_cell.value is None or re.search(r'(\d\d\d\d)\-(\d\d)\-(\d\d)', dod_cell.value) is None:
+            if dod_cell.value is None or re.search(r'(\d\d\d\d)\-(\d\d)\-(\d\d)', str(dod_cell.value)) is None:
                 old_val = dod_cell.value
                 dod_cell.value = '0000-00-00'
                 warn_autocell(pos, old_val, dod_cell.value, 'Date of Death')
