@@ -22,8 +22,8 @@ def main():
     #Inital data parsing and setup....
     start = time.perf_counter()
     #Parse data
-    mice, cages = parse_data('new.xlsx')
-    sort_cages = sorted(cages.items(), key = lambda x: x[1].pri)  #sorted list of cage objects from which to print
+    mice, cages = parse_data('temp.xlsx')
+    sort_cages = [c[1] for c in sorted(cages.items(), key = lambda x: x[1].pri)]  #sorted list of cage objects from which to print
 
     #Calculate metrics for .txt output
     total_mice = len(mice.keys())
@@ -63,15 +63,13 @@ def main():
 
         #loop to draw cages (base layer of rectangles), 144x160px
         for cage in cage_list:
-            c = cage[1]
-            color = get_cage_color(c, conds)
-            r2 = pygame.draw.rect(pygwin, color, (x1, y1, 144, 160), border_radius = 10)
+            r2 = pygame.draw.rect(pygwin, cage.color, (x1, y1, 144, 160), border_radius = 10)
             r2 = pygame.draw.rect(pygwin, 'black', (x1, y1, 144, 160), width = 2, border_radius = 10)
 
-            cage_text = gen_cage_text(c, r2)
+            cage_text = gen_cage_text(cage, r2)
             for t in cage_text:
                 pygwin.blit(t[0], t[1])
-            print_mice(pygwin, mice, c.mice, x1, y1)
+            print_mice(pygwin, mice, cage.mice, x1, y1)
             x1 = x2
             x2 += 144
             row_counter+=1
