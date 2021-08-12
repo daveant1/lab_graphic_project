@@ -48,12 +48,12 @@ def st_stripcell(position, type):
 
 #Failed to find sheet name
 def err_autosheet(expect_name):
-    print('ERROR: Could not find column header "' + expect_name + '"')
+    print('FATAL ERROR: Could not find column header "' + expect_name + '"')
     sys.exit(0)
 
 #Failed to find sheet name
 def err_autoheader(expect_name):
-    print('ERROR: Could not find column header "' + expect_name + '"')
+    print('FATAL ERROR: Could not find column header "' + expect_name + '"')
     sys.exit(0)
 
 #Failed to autocorrect cell or cell requires manual correction
@@ -68,17 +68,17 @@ def err_cond_color(position, condition):
 
 #General error when any part of cell correction fails
 def err_autocell_gen(sheetname):
-    print('ERROR: Cell autocorrection process failed for sheet "' + sheetname + '"')
+    print('FATAL ERROR: Cell autocorrection process failed for sheet "' + sheetname + '"')
     sys.exit(0)
 
 #Filename error
 def err_filename():
-    print('ERROR: No file with name format <prefix>00-00-0000.xlsx found! (Example: prefix_of_file_00-00-0000.xlsx)')
+    print('FATAL ERROR: No file with name format <prefix>00-00-0000.xlsx found! (Example: prefix_of_file_00-00-0000.xlsx)')
     sys.exit(0)
     
 #Unrecognized sheet name
 def err_sheetname(sheetname):
-    print('ERROR: Did not recognize sheet name', sheetname)
+    print('FATAL ERROR: Did not recognize sheet name', sheetname)
     sys.exit(0)
 
 #Duplicate Cage IDs in Cages sheet
