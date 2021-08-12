@@ -46,11 +46,12 @@ def gen_cage_text(cage, shape):
         tl.append((t, t_area))
 
         wd = reformat_date(str(cage.WD))
-        wd_msg = 'Wean Date: ' + wd
-        t = FONT12.render(wd_msg, True, 'black')
-        t_area = t.get_rect()
-        t_area.center = (x, y+71)
-        tl.append((t, t_area))
+        if wd:
+            wd_msg = 'Wean Date: ' + wd
+            t = FONT12.render(wd_msg, True, 'black')
+            t_area = t.get_rect()
+            t_area.center = (x, y+71)
+            tl.append((t, t_area))
     return tl
 
 #Function to update properties of mouse shape

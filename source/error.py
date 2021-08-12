@@ -6,6 +6,8 @@ from openpyxl import load_workbook
 from spellchecker import SpellChecker
 from log import *
 
+errors = 0
+
 #Function to search for and parse filename with regex
 def parse_filename():
     dir = os.listdir(os.getcwd())
@@ -141,16 +143,16 @@ def detect_cells_c(worksheet):
         if cell.value is not None and str(cell.value).isdigit() and int(cell.value) > 0:    # check if pups is a number greater than 0
             dob_pos = str(col_dict['Pup DOB']) + str(cell.row)
             dob_cell = worksheet[dob_pos]
-            if dob_cell.value is None or re.search(r'(\d\d\d\d)\-(\d\d)\-(\d\d)', dob_cell.value) is None:
+            if dob_cell.value is None or re.search(r'(\d\d\d\d)\-(\d\d)\-(\d\d)', str(dob_cell.value)) is None:
                 old_val = dob_cell.value
                 dob_cell.value = '0000-00-00'
                 warn_autocell(dob_pos, old_val, dob_cell.value, 'Pup DOB')
             wd_pos = str(col_dict['Wean Date']) + str(cell.row)
             wd_cell = worksheet[wd_pos]
-            if wd_cell.value is None or re.search(r'(\d\d\d\d)\-(\d\d)\-(\d\d)', wd_cell.value) is None:
+            if wd_cell.value and re.search(r'(\d\d\d\d)\-(\d\d)\-(\d\d)', str(wd_cell.value)) is None:
                 old_val = wd_cell.value
                 wd_cell.value = None
-                warn_autocell(dob_pos, old_val, wd_cell.value, 'Wean Date')
+                warn_autocell(wd_pos, old_val, wd_cell.value, 'Wean Date')
     #Check condition/color chart
     cond_col = worksheet[col_dict['Condition']][2:]
     cond_set = set([])
@@ -159,18 +161,18 @@ def detect_cells_c(worksheet):
         if cond_cell.value is not None and not str(cond_cell.value).isspace():
             pos = str(col_dict['Color']) + str(cond_cell.row)
             color = worksheet[pos].value
-            cond_set.add(cond_cell.value)
+            cond_set.add(str(cond_cell.value).lower())
             if color is None or str(color).isspace() or str(color).lower() not in color_list:
                 failed = True
-                err_cond_color(pos, cond_cell.value)
+                err_cond_color(pos)
     #Check status/condition column for unrecognized condition
     stat_col = worksheet[col_dict['Status/Condition']][2:]
     for stat_cell in stat_col:
         if stat_cell.value is not None and not str(stat_cell.value).isspace():
-            if stat_cell.value not in cond_set:
+            if str(stat_cell.value).lower() not in cond_set:
                 pos = str(stat_cell.column)+str(stat_cell.row)
                 old_val = stat_cell.value
-                stat_cell.value = cond_set[0]
+                stat_cell.value = None
                 warn_autocell(pos, old_val, stat_cell.value, 'Status/Condition')
     if failed:
         err_autocell_gen('Cages')
@@ -188,7 +190,7 @@ def compare_cage_lists(cids_m, cids_c):
     failed = False
     set_cids_m, set_cids_c = cids_m, set(cids_c)    #cids_m is already a set
     if len(set_cids_c) < len(cids_c):   #Check for duplicate CIDS in cage sheet
-        for cid in cids_c:
+        for cid in set_cids_c:
             if cids_c.count(cid) > 1:
                 err_dup_cid(cid)
         failed = True
@@ -217,5 +219,5 @@ def detect(filename):
     ws_m, cids_m = detect_cells_m(ws_m)
     ws_c, cids_c = detect_cells_c(ws_c)
     compare_cage_lists(cids_m, cids_c)      #Detect mismatch/duplicate CIDs between Mice vs. Cages sheet
-    wb.save('new.xlsx')                 #Save temp file
+    wb.save('temp.xlsx')                 #Save temp file
     return

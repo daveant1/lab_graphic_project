@@ -15,7 +15,7 @@ def gen_objs(df_m, df_c):
         cond = cond_ls[i]
         if not pd.isnull(cond) and not str(cond).isspace():
             if cond not in conds.keys():
-                conds[cond] = (str(df_c['Color'][i]).lower(), pri)
+                conds[str(cond).lower()] = (str(df_c['Color'][i]).lower(), pri)
             pri+=1
 
     #Generate cage dict from mouse df
@@ -23,18 +23,20 @@ def gen_objs(df_m, df_c):
     cdf_ls = df_c['Cage ID'].tolist()
     cid_set = set(c_ls + cdf_ls)
     for CID in cid_set:
-        cages[CID] = cage(CID)
+        cages[str(CID)] = cage(str(CID))
 
     #Update remaining cage attributes from cage df
     for i in range(len(cdf_ls)):
         CID = str(cdf_ls[i])
         status = df_c['Status/Condition'][i]
         if not pd.isnull(status) and not str(status).isspace():
-            cages[CID].color = conds[status][0]
-            cages[CID].pri = conds[status][1]
-        cages[key].pups = df_c['Number of Pups'][i]
-        cages[key].DOB = df_c['Pup DOB'][i]
-        cages[key].WD = df_c['Wean Date'][i]
+            cages[CID].color = conds[str(status).lower()][0]
+            cages[CID].pri = conds[str(status).lower()][1]
+        pups = df_c['Number of Pups'][i]
+        if pups is not None and str(pups).isdigit() and int(pups) > 0:
+            cages[CID].pups = int(pups)
+            cages[CID].DOB = df_c['Pup DOB'][i]
+            cages[CID].WD = df_c['Wean Date'][i]
     
     #Initalize all mouse objects
     m_ls = df_m['Mouse ID'].tolist()      #list of all mouse IDs
