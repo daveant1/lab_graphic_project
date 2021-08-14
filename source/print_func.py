@@ -71,14 +71,13 @@ def gen_mouse_text(mouse, shape, o_x, o_y):
     y = origin[1]
 
     #Draw Age
-    if not str(mouse.age).isspace():
-        if mouse.runt:
-            t = FONT8.render(str(mouse.age), True, 'black')
-        else:
-            t = FONT12.render(str(mouse.age), True, 'black')
-        t_area = t.get_rect()
-        t_area.center = shape.center
-        tl.append((t, t_area))
+    if mouse.runt:
+        t = FONT8.render(str(mouse.age), True, 'black')
+    else:
+        t = FONT12.render(str(mouse.age), True, 'black')
+    t_area = t.get_rect()
+    t_area.center = shape.center
+    tl.append((t, t_area))
 
     #Draw Mouse ID
     if mouse.genotyped:
