@@ -57,7 +57,7 @@ def gen_cage_text(cage, shape):
 #Function to update properties of mouse shape
 def get_mouse_color(mouse):
     color = 'White'
-    if isinstance(mouse.age, int) and (mouse.age > 275):
+    if mouse.age > 275:
         color = 'Orange'
     if mouse.pregnant:
         color = 'Pink'
@@ -91,7 +91,7 @@ def gen_mouse_text(mouse, shape, o_x, o_y):
 
     #Draw mouse date of death (DOD)
     death_date = reformat_date(str(mouse.DOD)) 
-    if (death_date):
+    if death_date:
         if mouse.sacked == 's':
             cod = 'Sacked'
         else:

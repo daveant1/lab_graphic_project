@@ -3,7 +3,7 @@ class mouse:
         self.ID = ID  # Mouse ID (string)
         self.ET = True  # Eartag (bool)
         self.sex = False  # False: Female, True: Male
-        self.age = ''  # str or int (status or age)
+        self.age = 0  # str or int (status or age)
         self.pregnant = False
         self.sacked = ''  # Sack status
         self.genotyped = False
