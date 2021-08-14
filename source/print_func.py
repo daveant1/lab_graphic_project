@@ -39,7 +39,7 @@ def gen_cage_text(cage, shape):
     #Draw Pup DOB and Wean Date
     if cage.pups > 0:
         dob = reformat_date(str(cage.DOB))
-        dob_msg = str(int(cage.pups)) + ' pups DOB: ' + dob
+        dob_msg = str(cage.pups) + ' pups DOB: ' + dob
         t = FONT12.render(dob_msg, True, 'black')
         t_area = t.get_rect()
         t_area.center = (x, y+58)
