@@ -41,9 +41,9 @@ def st_autocell(position, old_val, new_val, type):
     print('\n')
     return
 
-#Stripped whitespace from cell value
-def st_stripcell(position, type):
-    print('CELL: Stripped whitespace from', type, 'cell at', position)
+#Error/warn/fix count message
+def st_ewf(ewf):
+    print('Total Errors:', ewf[0], ' Total Warnings:', ewf[1], ' Total Cells Fixed:', ewf[2])
     print('\n')
     return
 
@@ -51,14 +51,16 @@ def st_stripcell(position, type):
 #ERROR
 
 #Failed to find sheet name
-def err_autosheet(expect_name):
-    print('FATAL ERROR: Could not find column header "' + expect_name + '"')
+def err_autosheet(expect_name, ewf):
+    print('FATAL ERROR: Could not find sheet name "' + expect_name + '"\n')
+    st_ewf(ewf)
     sys.exit(0)
 
 #Failed to find sheet name
 def err_autoheader(expect_name):
-    print('FATAL ERROR: Could not find column header "' + expect_name + '"')
-    sys.exit(0)
+    print('ERROR: Could not find column header "' + expect_name + '"')
+    print('\n')
+    return
 
 #Failed to autocorrect cell or cell requires manual correction
 def err_autocell(position, old_val, type):
@@ -73,18 +75,21 @@ def err_cond_color(position):
     return
 
 #General error when any part of cell correction fails
-def err_autocell_gen(sheetname):
+def err_autocell_gen(sheetname, ewf):
     print('FATAL ERROR: Cell autocorrection process failed for sheet "' + sheetname + '"')
+    st_ewf(ewf)
     sys.exit(0)
 
 #Filename error
-def err_filename():
+def err_filename(ewf):
     print('FATAL ERROR: No file with name format <prefix>00-00-0000.xlsx found! (Example: prefix_of_file_00-00-0000.xlsx)')
+    st_ewf(ewf)
     sys.exit(0)
     
 #Unrecognized sheet name
-def err_sheetname(sheetname):
+def err_sheetname(sheetname, ewf):
     print('FATAL ERROR: Did not recognize sheet name', sheetname)
+    st_ewf(ewf)
     sys.exit(0)
 
 #Duplicate Cage IDs in Cages sheet
