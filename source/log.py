@@ -5,6 +5,7 @@ import sys
 
 #Excel file successfully parsed
 def st_parse(ts):
+    print('\nGraphic Generation Process:\n')
     print('Excel file parsed successfully: ', str(ts) + 's')
     return
 
