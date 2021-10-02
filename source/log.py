@@ -44,7 +44,7 @@ def st_autocell(position, old_val, new_val, type):
 
 #Error/warn/fix count message
 def st_ewf(ewf):
-    print('Total Errors:', ewf[0], ' Total Warnings:', ewf[1], ' Total Cells Fixed:', ewf[2])
+    print('Total Errors:', ewf[0], ' Total Warnings:', ewf[1], ' Total Fixes:', ewf[2])
     print('\n')
     return
 
