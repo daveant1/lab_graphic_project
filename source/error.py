@@ -49,8 +49,6 @@ def detect_headers(worksheet):
         true_names = ['Mouse ID', 'Cage ID', 'Ear Tag?', 'Sex', 'DOB', 'Age (days)', 'Pregnant?', 'Sacked Status: Potential (P), Sacked (S), Died (D)', 'Date of Death', 'Genotyped?', 'Runt?', 'Comments']
     elif worksheet.title == 'Cages':
         true_names = ['Cage ID', 'Status/Condition', 'Number of Pups', 'Pup DOB', 'Wean Date', 'Condition', 'Color']
-    else: 
-        err_sheetname(worksheet.title, (err+1, warn, fix))
     sp = SpellChecker(language=None, distance=3, case_sensitive=True)
     for name in true_names:
         sp.word_frequency.add(name)

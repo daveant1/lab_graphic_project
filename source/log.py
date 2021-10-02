@@ -86,12 +86,6 @@ def err_filename(ewf):
     print('FATAL ERROR: No file with name format <prefix>00-00-0000.xlsx found! (Example: prefix_of_file_00-00-0000.xlsx)')
     st_ewf(ewf)
     sys.exit(0)
-    
-#Unrecognized sheet name
-def err_sheetname(sheetname, ewf):
-    print('FATAL ERROR: Did not recognize sheet name', sheetname)
-    st_ewf(ewf)
-    sys.exit(0)
 
 #Duplicate Cage IDs in Cages sheet
 def err_dup_cid(cid):
