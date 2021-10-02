@@ -57,7 +57,7 @@ def err_autosheet(expect_name, ewf):
     st_ewf(ewf)
     sys.exit(0)
 
-#Failed to find sheet name
+#Failed to find column header
 def err_autoheader(expect_name):
     print('ERROR: Could not find column header "' + expect_name + '"')
     print('\n')

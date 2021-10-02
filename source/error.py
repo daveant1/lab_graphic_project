@@ -69,6 +69,7 @@ def detect_headers(worksheet):
     failed = False
     for name in true_names:
         if name not in curr_headers:
+            failed = True
             err+=1
             err_autoheader(name)
     if failed:
