@@ -112,3 +112,4 @@ def warn_autocell(position, old_val, new_val, type):
 def warn_empty_cage(cid):
     print('WARNING: Empty cage; Cage ID "'+str(cid)+'" is present in Cages sheet but not Mice sheet\n')
     return
+    
