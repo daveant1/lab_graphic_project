@@ -250,10 +250,10 @@ def detect(filename):
     delete_blank_rows(ws_c)
     if(ws_m_max - ws_m.max_row > 0):
         st_del_rows(ws_m_max-ws_m.max_row, 'Mice')
-        warn+=1
+        fix+=1
     if(ws_c_max - ws_c.max_row > 0):
         st_del_rows(ws_c_max - ws_c.max_row, 'Cages')
-        warn+=1
+        fix+=1
     detect_headers(ws_m)
     detect_headers(ws_c)
     cids_m = detect_cells_m(ws_m)
