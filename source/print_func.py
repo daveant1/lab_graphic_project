@@ -106,12 +106,11 @@ def gen_mouse_text(mouse, shape, o_x, o_y):
 #Draw all mice shapes and apply relevant properties
 #initalize coordinates (x and y always represent center of shape)
 #inital coordinate: (o_x, o_y) is the top left corner of current cage cell
-def print_mice(pygwin, mice_dict, mouse_list, o_x, o_y):
+def print_mice(pygwin, mouse_list, o_x, o_y):
     x = o_x + 24
     y = o_y + 42
     m_count = 0    #Count of printed mice (for coordinate calculation)
-    for idx in mouse_list:
-        curr = mice_dict[idx]
+    for curr in mouse_list:
         color = get_mouse_color(curr)
         if curr.runt:
             rad = 10

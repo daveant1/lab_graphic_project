@@ -26,8 +26,8 @@ def st_colony_data(ts):
 
 #Graphic generation process complete
 def st_done():
-    print('Graphic generation process complete!\n\n')
-    sys.exit(0)
+    print('Graphic generation process complete!')
+    return
 
 #Autoorrected sheet name
 def st_autosheet(old_val, new_val):

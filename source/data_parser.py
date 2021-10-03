@@ -4,9 +4,15 @@ from objects import *
 #Input: pandas data frames df_m (mouse data) and df_c (cage data)
 #Output: dict of mouse objects, dict of cage objects, and dict of conditions
 def gen_objs(df_m, df_c):
-    mice = {}      #empty dict of mouse objects
-    cages = {}     #empty dict of cage objects
+    cages = {}     #empty dict of cage objects (each cage contains list of mouse objs)
     conds = {}      #condition/status dict (key: status, value: (Color, Priority integer))
+
+    #Initialize colony data values
+    total_cages = 0
+    total_mice = 0
+    total_pregnant = 0
+    total_litters = 0
+    total_pups = 0
 
     #Initalize conditions dict
     pri = 1
@@ -22,6 +28,7 @@ def gen_objs(df_m, df_c):
     c_ls = df_m['Cage ID'].tolist()
     cdf_ls = df_c['Cage ID'].tolist()
     cid_set = set(c_ls + cdf_ls)
+    total_cages = len(cid_set)
     for CID in cid_set:
         cages[str(CID)] = cage(str(CID))
 
@@ -34,34 +41,34 @@ def gen_objs(df_m, df_c):
             cages[CID].pri = conds[str(status).lower()][1]
         pups = df_c['Number of Pups'][i]
         if pups is not None and str(pups).isdigit() and int(pups) > 0:
+            total_litters+=1
+            total_pups+=int(pups)
             cages[CID].pups = int(pups)
             cages[CID].DOB = df_c['Pup DOB'][i]
             cages[CID].WD = df_c['Wean Date'][i]
     
     #Initalize all mouse objects
     m_ls = df_m['Mouse ID'].tolist()      #list of all mouse IDs
+    total_mice = len(m_ls)
     for i in range(len(m_ls)):
-        MID = str(m_ls[i])
-        if MID not in mice.keys():
-            new_mouse = mouse(MID)
-            CID = str(c_ls[i])
-            cages[CID].mice.append(MID)
-            if str(df_m['Ear Tag?'][i]).lower() in ('n', 'no'):
-                new_mouse.ET = False
-            if str(df_m['Sex'][i]).lower() == 'm':     #False: Female, True: Male
-                new_mouse.sex = True
-            new_mouse.age = int(df_m['Age (days)'][i])
-            if str(df_m['Pregnant?'][i]).lower() in ('y', 'yes'):
-                new_mouse.pregnant = True
-            new_mouse.sacked = str(df_m['Sacked Status: Potential (P), Sacked (S), Died (D)'][i]).lower() #Blank, potential for sack (p), already sacked (s), or died (d)
-            if str(df_m['Genotyped?'][i]).lower() in ('y', 'yes'):
-                new_mouse.genotyped = True
-            if str(df_m['Runt?'][i]).lower() in ('y', 'yes'):
-                new_mouse.runt = True
-            new_mouse.DOD = str(df_m['Date of Death'][i])
-            mice[MID] = new_mouse
+        new_mouse = mouse(str(m_ls[i]))
+        if str(df_m['Ear Tag?'][i]).lower() in ('n', 'no'):
+            new_mouse.ET = False
+        if str(df_m['Sex'][i]).lower() == 'm':     #False: Female, True: Male
+            new_mouse.sex = True
+        new_mouse.age = int(df_m['Age (days)'][i])
+        if str(df_m['Pregnant?'][i]).lower() in ('y', 'yes'):
+            new_mouse.pregnant = True
+            total_pregnant+=1
+        new_mouse.sacked = str(df_m['Sacked Status: Potential (P), Sacked (S), Died (D)'][i]).lower() #Blank, potential for sack (p), already sacked (s), or died (d)
+        if str(df_m['Genotyped?'][i]).lower() in ('y', 'yes'):
+            new_mouse.genotyped = True
+        if str(df_m['Runt?'][i]).lower() in ('y', 'yes'):
+            new_mouse.runt = True
+        new_mouse.DOD = str(df_m['Date of Death'][i])
+        cages[str(c_ls[i])].mice.append(new_mouse)      #Add mouse to corresponding cage
 
-    return mice, cages
+    return cages, (total_cages, total_mice, total_pregnant, total_litters, total_pups)
 
 
 def parse_data(filename):
