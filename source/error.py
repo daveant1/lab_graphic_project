@@ -242,16 +242,17 @@ def compare_cage_lists(cids_m, cids_c):
 def detect(filename):
     global err, warn, fix
     wb = load_workbook(filename)        #Load workbook
+    st_detect()
     detect_sheetnames(wb)          
     ws_m, ws_c = wb['Mice'], wb['Cages']   #Load worksheets
     ws_m_max, ws_c_max = ws_m.max_row, ws_c.max_row
     delete_blank_rows(ws_m)
     delete_blank_rows(ws_c)
     if(ws_m_max - ws_m.max_row > 0):
-        st_del_rows(ws_m_max-ws_m.max_row, 'Mice')
+        warn_del_rows(ws_m_max-ws_m.max_row, 'Mice')
         fix+=1
     if(ws_c_max - ws_c.max_row > 0):
-        st_del_rows(ws_c_max - ws_c.max_row, 'Cages')
+        warn_del_rows(ws_c_max - ws_c.max_row, 'Cages')
         fix+=1
     detect_headers(ws_m)
     detect_headers(ws_c)

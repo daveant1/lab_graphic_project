@@ -3,12 +3,16 @@ from print_func import *
 from log import *
 from error import *
 import time
+import sys
 import math
 import pygame
 
 def main():
-    #Initialize pygame's submodules for future use
+    #Initialization of pygame and stdout
     pygame.init()
+
+    f = open('log.txt', 'w')
+    sys.stdout = f
 
     #Parse filename
     match_fn = parse_filename()
