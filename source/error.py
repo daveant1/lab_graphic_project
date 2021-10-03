@@ -244,10 +244,15 @@ def detect(filename):
     wb = load_workbook(filename)        #Load workbook
     detect_sheetnames(wb)          
     ws_m, ws_c = wb['Mice'], wb['Cages']   #Load worksheets
-    print(ws_m.max_row, '/', ws_c.max_row)
+    ws_m_max, ws_c_max = ws_m.max_row, ws_c.max_row
     delete_blank_rows(ws_m)
     delete_blank_rows(ws_c)
-    print(ws_m.max_row, '/', ws_c.max_row)
+    if(ws_m_max - ws_m.max_row > 0):
+        st_del_rows(ws_m_max-ws_m.max_row, 'Mice')
+        fix+=1
+    if(ws_c_max - ws_c.max_row > 0):
+        st_del_rows(ws_c_max - ws_c.max_row, 'Cages')
+        fix+=1
     detect_headers(ws_m)
     detect_headers(ws_c)
     cids_m = detect_cells_m(ws_m)

@@ -30,6 +30,12 @@ def st_autosheet(old_val, new_val):
     print('\n')
     return
 
+#Deleted blank rows
+def st_del_rows(row_diff, sheetname):
+    print('ROWS: Deleted', row_diff, 'rows from sheet "'+sheetname+'"')
+    print('\n')
+    return
+    
 #Autoorrected column header
 def st_autoheader(old_val, new_val):
     print('HEADER: Corrected column header', str(old_val), 'to header', new_val)
