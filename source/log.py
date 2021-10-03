@@ -44,6 +44,11 @@ def st_autocell(position, old_val, new_val, type):
     print('CELL: Corrected', type, 'cell at', position, 'from', str(old_val), 'to', str(new_val), '\n')
     return
 
+#Deleted blank rows
+def st_del_rows(row_diff, sheetname):
+    print('ROW: Deleted', row_diff, 'blank rows from sheet "'+sheetname+'"\n')
+    return
+
 #Error/warn/fix count message
 def st_ewf(ewf):
     print('Total Errors:', ewf[0], ' Total Warnings:', ewf[1], ' Total Fixes:', ewf[2])
@@ -92,16 +97,11 @@ def err_dup_cid(cid):
 
 #Cage ID Missing from Cages sheet
 def err_miss_cage(cid):
-    print('ERROR: Missing cage; Cage ID "'+str(cid)+'" is present in Mice sheet but not Cages sheet\n')
+    print('ERROR: Missing cage. Cage ID "'+str(cid)+'" is present in Mice sheet but not Cages sheet\n')
     return
 
 
 #WARNING
-
-#Deleted blank rows
-def warn_del_rows(row_diff, sheetname):
-    print('WARNING: Deleted', row_diff, 'blank rows from sheet "'+sheetname+'"\n')
-    return
 
 #Chose default value for cell
 def warn_autocell(position, old_val, new_val, type):
@@ -110,6 +110,5 @@ def warn_autocell(position, old_val, new_val, type):
 
 #Empty cages will be printed
 def warn_empty_cage(cid):
-    print('WARNING: Empty cage; Cage ID "'+str(cid)+'" is present in Cages sheet but not Mice sheet\n')
+    print('WARNING: Empty cage. Cage ID "'+str(cid)+'" is present in Cages sheet but not Mice sheet\n')
     return
-    

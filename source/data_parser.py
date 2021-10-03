@@ -40,7 +40,7 @@ def gen_objs(df_m, df_c):
             cages[CID].color = conds[str(status).lower()][0]
             cages[CID].pri = conds[str(status).lower()][1]
         pups = df_c['Number of Pups'][i]
-        if pups is not None and str(pups).isdigit() and int(pups) > 0:
+        if pups is not None and str(pups).replace('.', '').isdigit() and int(pups) > 0:
             total_litters+=1
             total_pups+=int(pups)
             cages[CID].pups = int(pups)

@@ -159,8 +159,8 @@ def detect_cells_c(worksheet):
             cids.append(cell.value)
     #Check if pups->DOB(required)->Wean Date(not required)
     pup_col = worksheet[col_dict['Number of Pups']][2:]
-    for cell in pup_col: 
-        if cell.value is not None and str(cell.value).isdigit() and int(cell.value) > 0:    # check if pups is a number greater than 0
+    for cell in pup_col:
+        if cell.value is not None and str(cell.value).replace('.', '').isdigit() and int(cell.value) > 0:    # check if pups is a number greater than 0
             dob_pos = str(col_dict['Pup DOB']) + str(cell.row)
             dob_cell = worksheet[dob_pos]
             if dob_cell.value is None or re.search(r'(\d\d\d\d)\-(\d\d)\-(\d\d)', str(dob_cell.value)) is None:
@@ -249,11 +249,11 @@ def detect(filename):
     delete_blank_rows(ws_m)
     delete_blank_rows(ws_c)
     if(ws_m_max - ws_m.max_row > 0):
-        warn_del_rows(ws_m_max-ws_m.max_row, 'Mice')
-        fix+=1
+        st_del_rows(ws_m_max-ws_m.max_row, 'Mice')
+        warn+=1
     if(ws_c_max - ws_c.max_row > 0):
-        warn_del_rows(ws_c_max - ws_c.max_row, 'Cages')
-        fix+=1
+        st_del_rows(ws_c_max - ws_c.max_row, 'Cages')
+        warn+=1
     detect_headers(ws_m)
     detect_headers(ws_c)
     cids_m = detect_cells_m(ws_m)
