@@ -71,7 +71,7 @@ def detect_headers(worksheet):
             err+=1
             err_autoheader(name)
     if failed:
-        err_autocell_gen(worksheet.title, (err, warn, fix))
+        err_autocell_gen(worksheet.title, (err+1, warn, fix))
     return
 
 #Mouse cell detection function; Iterates through selected columns and checks for blank cells
@@ -101,8 +101,9 @@ def detect_cells_m(worksheet):
     #Check Sex
     sex_col = worksheet[col_dict['Sex']][2:]
     for cell in sex_col:
-        if str(cell.value).lower() not in ('f', 'm'):
-            old_val = cell.value
+        old_val = cell.value
+        cell.value = str(cell.value).replace(' ', '')
+        if str(cell.value).lower() not in ('f', 'm'):          
             cell.value = 'F'
             warn+=1
             warn_autocell(str(cell.column)+str(cell.row), old_val, cell.value, 'Sex')
@@ -128,6 +129,7 @@ def detect_cells_m(worksheet):
     #Check if sacked->date of death
     sac_col = worksheet[col_dict['Sacked Status: Potential (P), Sacked (S), Died (D)']][2:]
     for cell in sac_col:
+        cell.value = str(cell.value).replace(' ', '')
         if str(cell.value).lower() in ('s', 'd'):   #if sac'd or died include date of death
             pos = str(col_dict['Date of Death']) + str(cell.row)
             dod_cell = worksheet[pos]
@@ -137,7 +139,7 @@ def detect_cells_m(worksheet):
                 warn+=1
                 warn_autocell(pos, old_val, dod_cell.value, 'Date of Death')
     if failed:
-        err_autocell_gen('Mice', (err, warn, fix))
+        err_autocell_gen('Mice', (err+1, warn, fix))
     return cids
 
 #Cage cell detection function; Iterates through selected columns and checks for blank cells
@@ -160,6 +162,7 @@ def detect_cells_c(worksheet):
     #Check if pups->DOB(required)->Wean Date(not required)
     pup_col = worksheet[col_dict['Number of Pups']][2:]
     for cell in pup_col:
+        cell.value = str(cell.value).replace(' ', '')
         if cell.value is not None and str(cell.value).replace('.', '').isdigit() and int(cell.value) > 0:    # check if pups is a number greater than 0
             dob_pos = str(col_dict['Pup DOB']) + str(cell.row)
             dob_cell = worksheet[dob_pos]
@@ -187,7 +190,7 @@ def detect_cells_c(worksheet):
             if color is None or str(color).isspace() or str(color).lower() not in color_list:
                 failed = True
                 err+=1
-                err_cond_color(pos)
+                err_cond_color(pos, color)
     #Check status/condition column for unrecognized condition
     stat_col = worksheet[col_dict['Status/Condition']][2:]
     for stat_cell in stat_col:
@@ -199,7 +202,7 @@ def detect_cells_c(worksheet):
                 warn+=1
                 warn_autocell(pos, old_val, stat_cell.value, 'Status/Condition')
     if failed:
-        err_autocell_gen('Cages', (err, warn, fix))
+        err_autocell_gen('Cages', (err+1, warn, fix))
     return cids
 
 #Function to simply delete the blank rows from the excel sheet to avoid confusion with blank cells
@@ -235,7 +238,7 @@ def compare_cage_lists(cids_m, cids_c):
             warn+=1
             warn_empty_cage(cid)
     if failed:
-        err_autocell_gen('Cages', (err, warn, fix))
+        err_autocell_gen('Cages', (err+1, warn, fix))
     return
 
 #Main error detection function: Calls subroutines for checking and correcting/logging sheet names, column headers, and cell values
