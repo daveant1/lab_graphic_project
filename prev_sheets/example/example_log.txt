@@ -1,0 +1,14 @@
+SHEET DETECTION:
+
+Total Errors: 0  Total Warnings: 0  Total Fixes: 0
+
+
+GRAPHIC GENERATION:
+
+Excel file parsed successfully:  0.0283s
+
+Colony graphic saved successfully:  0.5543s
+
+Colony stat file saved successfully:  0.0015s
+
+Graphic generation process complete!

@@ -1,9 +1,0 @@
-Total Number of Cages: 60 
-
-Total Number of Mice: 133 
-
-Total Number of Litters: 5 
-
-Total Number of Pups: 26 
-
-Total Number of Pregancies: 4
