@@ -1,0 +1,4 @@
+__pycache__/
+Colony_*
+.vscode/
+temp.*

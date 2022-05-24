@@ -1,91 +1,81 @@
 import pandas as pd
 from objects import *
 
-#Input: pandas data frames df (mouse data) and df2 (cage data)
+#Input: pandas data frames df_m (mouse data) and df_c (cage data)
 #Output: dict of mouse objects, dict of cage objects, and dict of conditions
-def gen_objs(df, df2):
-    mice = {}      #empty dict of mouse objects
-    cages = {}     #empty dict of cage objects
+def gen_objs(df_m, df_c):
+    cages = {}     #empty dict of cage objects (each cage contains list of mouse objs)
     conds = {}      #condition/status dict (key: status, value: (Color, Priority integer))
 
-    #Construct and assign mouse vectors to cages
-    c_ls = df['Cage ID'].tolist()      #list of all cages including repeats
-    m_ls = df['Mouse ID'].tolist()      #list of all mouse IDs
+    #Initialize colony data values
+    total_cages = 0
+    total_mice = 0
+    total_pregnant = 0
+    total_litters = 0
+    total_pups = 0
 
-    #Loop to initalize conditions dict
-    pri = 0
-    for i in range(len(df2['Condition'].tolist())):
-        if not isinstance(df2['Condition'][i], float):
-            key = str(df2['Condition'][i]).lower()
-            if key not in conds.keys():
-                conds[key] = (str(df2['Color'][i]).lower(), int(pri))
-                pri+=1
+    #Initalize conditions dict
+    pri = 1
+    cond_ls = df_c['Condition'].tolist()
+    for i in range(len(cond_ls)):
+        cond = cond_ls[i]
+        if not pd.isnull(cond) and not str(cond).isspace():
+            if cond not in conds.keys():
+                conds[str(cond).lower()] = (str(df_c['Color'][i]).lower(), pri)
+            pri+=1
 
-    #Loop to generate cage dict from mouse df
-    for i in range(len(c_ls)):
-        CID = str(c_ls[i])
-        if CID not in cages.keys():    #Construct new entry if no key
-            cages[CID] = cage(CID)
-        cages[CID].mice.append(i)
-
-    #Add cages exclusive to the cage df (not in mouse df), so these cages have no mice
-    cdf_ls = df2['Cage ID'].tolist()
-    for CID in cdf_ls:
-        CID = str(CID)
-        if CID not in cages.keys():
-            cages[CID] = cage(CID)
+    #Generate cage dict from mouse df
+    c_ls = df_m['Cage ID'].tolist()
+    cdf_ls = df_c['Cage ID'].tolist()
+    cid_set = set(c_ls + cdf_ls)
+    total_cages = len(cid_set)
+    for CID in cid_set:
+        cages[str(CID)] = cage(str(CID))
 
     #Update remaining cage attributes from cage df
     for i in range(len(cdf_ls)):
-        key = str(df2['Cage ID'][i])
-        if not isinstance(df2['Status/Condition'][i], float):
-            status = str(df2['Status/Condition'][i]).lower()     #CONVERT TO COLOR LATER
-            cages[key].status = status
-            if status in conds.keys():
-                cages[key].pri = conds[status][1]
-        cages[key].pups = df2['Number of Pups'][i]
-        cages[key].DOB = df2['Pup DOB'][i]
-        cages[key].WD = df2['Wean Date'][i]
-
-    #Loop to initalize all mice objects
+        CID = str(cdf_ls[i])
+        status = df_c['Status/Condition'][i]
+        if not pd.isnull(status) and not str(status).isspace():
+            cages[CID].color = conds[str(status).lower()][0]
+            cages[CID].pri = conds[str(status).lower()][1]
+        pups = df_c['Number of Pups'][i]
+        if pups is not None and str(pups).replace('.', '').isdigit() and int(pups) > 0:
+            total_litters+=1
+            total_pups+=int(pups)
+            cages[CID].pups = int(pups)
+            cages[CID].DOB = df_c['Pup DOB'][i]
+            cages[CID].WD = df_c['Wean Date'][i]
+    
+    #Initalize all mouse objects
+    m_ls = df_m['Mouse ID'].tolist()      #list of all mouse IDs
+    total_mice = len(m_ls)
     for i in range(len(m_ls)):
         new_mouse = mouse(str(m_ls[i]))
-        new_mouse.CID = str(c_ls[i])
-        if str(df['Ear Tag?'][i]).lower() in ('n', 'no'):
+        if str(df_m['Ear Tag?'][i]).replace(' ','').lower() in ('n', 'no'):
             new_mouse.ET = False
-        if str(df['Sex'][i]).lower() == 'm':     #False: Female, True: Male
+        if str(df_m['Sex'][i]).lower() == 'm':     #False: Female, True: Male
             new_mouse.sex = True
-        if not isinstance(df['Age (days)'][i], float):
-            if isinstance(df['Age (days)'][i], str):
-                new_mouse.age = str(df['Age (days)'][i])
-            else:
-                new_mouse.age = int(df['Age (days)'][i])
-        if str(df['Pregnant?'][i]).lower() in ('y', 'yes'):
+        new_mouse.age = int(df_m['Age (days)'][i])
+        if str(df_m['Pregnant?'][i]).replace(' ','').lower() in ('y', 'yes'):
             new_mouse.pregnant = True
-        new_mouse.sacked = str(df['Sacked Status: Potential (P), Sacked (S), Sacrificed (D)'][i]).lower() #Blank, potential for sack (p), or already sacked (s)
-        if str(df['Genotyped?'][i]).lower() in ('y', 'yes'):
+            total_pregnant+=1
+        new_mouse.sacked = str(df_m['Sacked Status: Potential (P), Sacked (S), Died (D)'][i]).lower() #Blank, potential for sack (p), already sacked (s), or died (d)
+        if str(df_m['Genotyped?'][i]).replace(' ','').lower() in ('y', 'yes'):
             new_mouse.genotyped = True
-        if str(df['Runt?'][i]).lower() in ('y', 'yes'):
+        if str(df_m['Runt?'][i]).replace(' ','').lower() in ('y', 'yes'):
             new_mouse.runt = True
-        new_mouse.DOD = str(df['Date of Death'][i])
-        
-        mice[i] = new_mouse
+        new_mouse.DOD = str(df_m['Date of Death'][i])
+        cages[str(c_ls[i])].mice.append(new_mouse)      #Add mouse to corresponding cage
 
-    return mice, cages, conds
+    return cages, (total_cages, total_mice, total_pregnant, total_litters, total_pups)
 
 
 def parse_data(filename):
-    file = open('./' + filename, 'rb')
+    file = open(filename, 'rb')
 
-    mice_data = pd.read_excel(file, sheet_name = 0, skiprows = 1)  #data frame generation (skip first row)
-    mice_data.dropna(axis=0, how = 'all', inplace = True)   #drop blank rows and reset indices
-    mice_data.reset_index(drop = True, inplace = True)
-
-    cage_data = pd.read_excel(file, sheet_name = 1, skiprows = 1)
-    cage_data.dropna(axis=0, how = 'all', inplace=True)
-    cage_data.reset_index(drop = True, inplace = True)
+    #No longer necessary to remove empty rows; Switch to openpyxl engine for reading? Move all this logic over to error detection functions?
+    mice_data, cage_data = pd.read_excel(file, sheet_name = 'Mice', skiprows = 1, engine = 'xlrd'), pd.read_excel(file, sheet_name = 'Cages', skiprows = 1, engine = 'xlrd')
 
     #Construct and sort mice/cage objects
-    mice, cages, conds = gen_objs(mice_data, cage_data)
-
-    return mice, cages, conds
+    return gen_objs(mice_data, cage_data)

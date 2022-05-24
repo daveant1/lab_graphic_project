@@ -1,3 +1,4 @@
+#Module that utilizes pygame to draw graphics
 import re
 import pygame
 
@@ -9,18 +10,11 @@ FONT8 = pygame.font.SysFont("Times New Roman", 8)
 
 #Function to reformat date to visible text format 00/00/00
 def reformat_date (date):
-    match = re.search(r'(\d*)\-(\d\d)\-(\d\d)', date)
+    match = re.search(r'(\d\d\d\d)\-(\d\d)\-(\d\d)', date)
     if match:
         return (match.group(2) + '/' + match.group(3) + '/' + match.group(1))
     else:
         return None
-
-#Function to update properties of cage shape based on conds dict
-def get_cage_color(cage, conds):
-    if isinstance(cage.status, str) and not cage.status.isspace() and cage.status in conds.keys():   #If status is string and not empty space, check for condition color
-        return conds[cage.status][0]       #Fill rectangle to corresponding condition color
-    else:
-        return 'white'
 
 #Function to construct cage text elements
 def gen_cage_text(cage, shape):
@@ -45,24 +39,25 @@ def gen_cage_text(cage, shape):
     #Draw Pup DOB and Wean Date
     if cage.pups > 0:
         dob = reformat_date(str(cage.DOB))
-        dob_msg = str(int(cage.pups)) + ' pups DOB: ' + dob
+        dob_msg = str(cage.pups) + ' pups DOB: ' + dob
         t = FONT12.render(dob_msg, True, 'black')
         t_area = t.get_rect()
         t_area.center = (x, y+58)
         tl.append((t, t_area))
 
         wd = reformat_date(str(cage.WD))
-        wd_msg = 'Wean Date: ' + wd
-        t = FONT12.render(wd_msg, True, 'black')
-        t_area = t.get_rect()
-        t_area.center = (x, y+71)
-        tl.append((t, t_area))
+        if wd:
+            wd_msg = 'Wean Date: ' + wd
+            t = FONT12.render(wd_msg, True, 'black')
+            t_area = t.get_rect()
+            t_area.center = (x, y+71)
+            tl.append((t, t_area))
     return tl
 
 #Function to update properties of mouse shape
 def get_mouse_color(mouse):
     color = 'White'
-    if isinstance(mouse.age, int) and (mouse.age > 275):
+    if mouse.age > 275:
         color = 'Orange'
     if mouse.pregnant:
         color = 'Pink'
@@ -76,18 +71,17 @@ def gen_mouse_text(mouse, shape, o_x, o_y):
     y = origin[1]
 
     #Draw Age
-    if not str(mouse.age).isspace():
-        if mouse.runt:
-            t = FONT8.render(str(mouse.age), True, 'black')
-        else:
-            t = FONT12.render(str(mouse.age), True, 'black')
-        t_area = t.get_rect()
-        t_area.center = shape.center
-        tl.append((t, t_area))
+    if mouse.runt:
+        t = FONT8.render(str(mouse.age), True, 'black')
+    else:
+        t = FONT12.render(str(mouse.age), True, 'black')
+    t_area = t.get_rect()
+    t_area.center = shape.center
+    tl.append((t, t_area))
 
     #Draw Mouse ID
     if mouse.genotyped:
-        t = FONT11.render(mouse.ID, True, 'yellow')
+        t = FONT11.render(mouse.ID, True, 'black', 'yellow')
     else:
         t = FONT11.render(mouse.ID, True, 'black')
     t_area = t.get_rect()
@@ -96,7 +90,7 @@ def gen_mouse_text(mouse, shape, o_x, o_y):
 
     #Draw mouse date of death (DOD)
     death_date = reformat_date(str(mouse.DOD)) 
-    if (death_date):
+    if death_date:
         if mouse.sacked == 's':
             cod = 'Sacked'
         else:
@@ -112,12 +106,11 @@ def gen_mouse_text(mouse, shape, o_x, o_y):
 #Draw all mice shapes and apply relevant properties
 #initalize coordinates (x and y always represent center of shape)
 #inital coordinate: (o_x, o_y) is the top left corner of current cage cell
-def print_mice(pygwin, mice_dict, mouse_list, o_x, o_y):
+def print_mice(pygwin, mouse_list, o_x, o_y):
     x = o_x + 24
     y = o_y + 42
     m_count = 0    #Count of printed mice (for coordinate calculation)
-    for idx in mouse_list:
-        curr = mice_dict[idx]
+    for curr in mouse_list:
         color = get_mouse_color(curr)
         if curr.runt:
             rad = 10
@@ -142,8 +135,7 @@ def print_mice(pygwin, mice_dict, mouse_list, o_x, o_y):
         #print sacked symbol (cross)
         if curr.sacked in ('p', 's', 'd'):
             pygame.draw.line(pygwin, 'black', (x-rad, y+rad), (x+rad, y-rad), 1)
-            p = 'p'
-            if curr.sacked != p:
+            if curr.sacked != 'p':
                 pygame.draw.line(pygwin, 'black', (x-rad, y-rad), (x+rad, y+rad), 1)
 
         m_count+=1
